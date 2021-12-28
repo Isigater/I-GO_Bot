@@ -1,0 +1,19 @@
+{
+  "name": "hiro6",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "start": "node main.js"
+  },
+  "type": "module",
+  "keywords": [],
+  "author": "Gater",
+  "license": "MIT",
+  "dependencies": {
+    "discord.js": "^13.3.1"
+  }
+}
