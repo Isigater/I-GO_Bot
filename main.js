@@ -17,10 +17,6 @@ var nowWhiteStone = new Array; //白い碁石の位置 (配列)
 var nowBrackAgehama; //黒のアゲハマの個数
 var nowWhiteAgehama; //白のアゲハマの個数
 
-const createCanvas = require('canvas');
-const canvas = createCanvas(640, 480);
-const ctx = canvas.getContext('2d');
-
 client.on('ready', () => {
     console.log(`LogInAs${client.user.tag}`)
 })
@@ -79,14 +75,6 @@ client.on('messageCreate', async msg => { //メッセージの取得
         boardSize = startText[1];
         console.log("start");
         nowPlayingBool = true;
-        const image = new Image();
-        image.src = 'I - Go_Bot / IGo_Board_' + startText[1] + '.png';
-        image.onerror = (err) => {
-            console.error(err);
-        };
-        image.onload = () => {
-            ctx.drawImage(image, 0, 0, 640, 480);
-        };
         msg.channel.send({ files: [boardPath] });
         //}
         //else {
