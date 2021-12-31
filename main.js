@@ -1,21 +1,31 @@
+// These lines make "require" available
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
+
 import { Client, Intents, Channel } from 'discord.js';
-const client = new Client({ intents: Object.keys(Intents.FLAGS) })
+const client = new Client({ intents: Object.keys(Intents.FLAGS) });
+const sharp = require('sharp');
 
 const stringNumberBool = n => typeof n === "string" && n !== "" && !isNaN(n); // int 化できるか
-const board_9Path = "I-Go_Bot/IGo_Board_9.png";
-const board_13Path = "I-Go_Bot/IGo_Board_13.png";
-const board_19Path = "I-Go_Bot/IGo_Board_19.png";
-const blackStonePath = "I-Go_Bot/BlackStone.png";
-const whiteastonePath = "I-Go_Bot/WhiteStone.png";
+const FirstPut_19 = [/*1*/[[4, 16]], /*2*/[[4, 16], [16, 4]], /*3*/[[4, 16], [16, 4], [16, 16]], /*4*/[[4, 16], [16, 4], [16, 16], [4, 4]],
+    /*5*/[[4, 16], [16, 4], [16, 16], [4, 4], [10, 10]], /*6*/[[4, 16], [16, 4], [16, 16], [4, 4], [16, 10], [4, 10]], /*7*/[[4, 16], [16, 4], [16, 16], [4, 4], [10, 16], [10, 4], [10, 10]],
+    /*8*/[[4, 16], [16, 4], [16, 16], [4, 4], [10, 16], [10, 4], [4, 10], [16, 10]], /*9*/[[4, 16], [16, 4], [16, 16], [4, 4], [10, 16], [10, 4], [4, 10], [16, 10], [10, 10]]];
+const FirstPut_13 = [/*1*/[[4, 10]], /*2*/[[4, 10], [10, 4]], /*3*/[[4, 10], [10, 4], [10, 10]], /*4*/[[4, 10], [10, 4], [10, 10], [4, 4]]];
+const board_9 = sharp("I-Go_Bot/IGo_Board_9.png");
+const board_13 = sharp("I-Go_Bot/IGo_Board_13.png");
+const board_19 = sharp("I-Go_Bot/IGo_Board_19.png");
+const blackStone = sharp("I-Go_Bot/BlackStone.png");
+const whiteastone = sharp("I-Go_Bot/WhiteStone.png");
 
-var nowPlayingBool = false; //今プレイ中かどうか
-var boardSize; // 盤の大きさ(9,13,19)
-var nextTurnBool = false; //次の手番　false => 黒、true => 白
-var playerBlack = "", playerWhite = ""; //対戦しているユーザー
-var nowBrackStone = new Array; //黒い碁石の位置 (配列)
-var nowWhiteStone = new Array; //白い碁石の位置 (配列)
-var nowBrackAgehama; //黒のアゲハマの個数
-var nowWhiteAgehama; //白のアゲハマの個数
+let board; //盤の画像
+let nowPlayingBool = false; //今プレイ中かどうか
+let boardSize; // 盤の大きさ(9,13,19)
+let nextTurnBool = false; //次の手番　false => 黒、true => 白
+let playerBlack = "", playerWhite = ""; //対戦しているユーザー
+let nowBrackStone = new Array; //黒い碁石の位置 (配列)
+let nowWhiteStone = new Array; //白い碁石の位置 (配列)
+let nowBrackAgehama; //黒のアゲハマの個数
+let nowWhiteAgehama; //白のアゲハマの個数
 
 client.on('ready', () => {
     console.log(`LogInAs${client.user.tag}`)
@@ -23,17 +33,17 @@ client.on('ready', () => {
 
 client.on('messageCreate', async msg => { //メッセージの取得
     if (msg.author.bot) return; // bot の発言は無視
-    var text = msg.content;
+    let text = msg.content;
 
     if (!msg.mentions.users.has(client.user.id)) return; //メンションされなければ終了
     //メンション部分を除く
     if (text[0] === '<') text = text.split(" ").join("").split(">")[1];
     else if (text[text.length - 1] === '>') text = text.split(" ").join("").split("<")[0];
 
-    var thisChannel = msg.channel;
+    let thisChannel = msg.channel;
     console.log(text);
 
-    var boardPlace = text.split('-');
+    let boardPlace = text.split('-');
     if (boardPlace[0] != null && boardPlace[1] != null && stringNumberBool(boardPlace[0]) && stringNumberBool(boardPlace[1]) && nowPlayingBool) {
         thisChannel.send(boardPlace[0]);
         thisChannel.send(boardPlace[1]);
@@ -69,7 +79,7 @@ client.on('messageCreate', async msg => { //メッセージの取得
     //手番の設定
 
     //対局開始
-    var startText = text.split(',');
+    let startText = text.split(',');
     if ((startText[0] === "start" || startText[0] === "Start") && stringNumberBool(startText[1])) {
         //if (playerBlack !== "" && playerWhite !== "") {
         boardSize = startText[1];
@@ -97,11 +107,15 @@ client.on('messageCreate', async msg => { //メッセージの取得
     //対局終了
 
     // ダイスロール
-    var dicePlace = msg.content.split('D');   // ＠メンション a D b => aDb のダイスロール
+    let dicePlace = text.split('D');   // ＠メンション a D b => aDb のダイスロール
     if (dicePlace[0] != null && dicePlace[1] != null && stringNumberBool(dicePlace[0]) && stringNumberBool(dicePlace[1])) {
+
+        console.log("debug1");
         var returnNum = 0;
         for (var num = 0; num < Number(dicePlace[0]); num++) {
             returnNum += Math.floor(Math.random() * Number(dicePlace[1])) + 1;
+
+            console.log(returnNum);
         }
         msg.channel.send("" + returnNum);
 
@@ -110,7 +124,7 @@ client.on('messageCreate', async msg => { //メッセージの取得
 
 })
 
-client.login('ODk2NDI1MjIyODAxMDg0NTA2.YWG7Cw.4z70Jsx92DXf3XbtwMmvzfB39XQ')
+client.login('ODk2NDI1MjIyODAxMDg0NTA2.YWG7Cw.m8tMU2md1lPUtULWcUi9a2VHHoU')
 
 ////できること
 //
