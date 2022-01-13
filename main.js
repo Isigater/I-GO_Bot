@@ -8,36 +8,71 @@ const sharp = require('sharp');
 
 const stringNumberBool = n => typeof n === "string" && n !== "" && !isNaN(n); // int 化できるか
 
-function JoinStone(white, top, left) {
-    if(white) {
-        await board.composite([{
-            input: "I-Go_Bot/BlackStone.png",
-            blend: "over",
-            top: top * 20,
-            left: left * 20,
-        }]);
+async function JoinStone(white, topNum, leftNum, image) {
+    if (white) {
+        if (boardSize == 9) {
+            whiteStoneArray.push({
+                input: "I-Go_Bot/WhiteStone.png",
+                blend: "over",
+                top: topNum * 40 - 20,
+                left: leftNum * 40 - 20
+            });
+        }
+        else if (boardSize == 13) {
+            whiteStoneArray.push({
+                input: "I-Go_Bot/WhiteStone.png",
+                blend: "over",
+                top: topNum * 40 - 20,
+                left: leftNum * 40 - 20
+            });
+        }
+        else if (boardSize == 19) {
+            whiteStoneArray.push({
+                input: "I-Go_Bot/WhiteStone.png",
+                blend: "over",
+                top: topNum * 40 - 20,
+                left: leftNum * 40 - 20
+            });
+        }
     }
     else {
-        await board.composite([{
-            input: "I-Go_Bot/WhiteStone.png",
-            blend: "over",
-            top: top * 20,
-            left: left * 20,
-        }]);
+        if (boardSize == 9) {
+            blackStoneArray.push({
+                input: "I-Go_Bot/BlackStone.png",
+                blend: "over",
+                top: topNum * 40 - 20,
+                left: leftNum * 40 - 20
+            });
+        }
+        else if (boardSize == 13) {
+            blackStoneArray.push({
+                input: "I-Go_Bot/BlackStone.png",
+                blend: "over",
+                top: topNum * 40 - 20,
+                left: leftNum  * 40 - 20
+            });
+        }
+        else if (boardSize == 19) {
+            blackStoneArray.push({
+                input: "I-Go_Bot/BlackStone.png",
+                blend: "over",
+                top: topNum * 40 - 20,
+                left: leftNum * 40 - 20
+            });
+        }
     }
+    let connectArray = blackStoneArray.push(whiteStoneArray);
+    console.log(connectArray);
+    image.composite(connectArray);
 }
 
 const FirstPut_19 = [/*1*/[[4, 16]], /*2*/[[4, 16], [16, 4]], /*3*/[[4, 16], [16, 4], [16, 16]], /*4*/[[4, 16], [16, 4], [16, 16], [4, 4]],
     /*5*/[[4, 16], [16, 4], [16, 16], [4, 4], [10, 10]], /*6*/[[4, 16], [16, 4], [16, 16], [4, 4], [16, 10], [4, 10]], /*7*/[[4, 16], [16, 4], [16, 16], [4, 4], [10, 16], [10, 4], [10, 10]],
     /*8*/[[4, 16], [16, 4], [16, 16], [4, 4], [10, 16], [10, 4], [4, 10], [16, 10]], /*9*/[[4, 16], [16, 4], [16, 16], [4, 4], [10, 16], [10, 4], [4, 10], [16, 10], [10, 10]]];
 const FirstPut_13 = [/*1*/[[4, 10]], /*2*/[[4, 10], [10, 4]], /*3*/[[4, 10], [10, 4], [10, 10]], /*4*/[[4, 10], [10, 4], [10, 10], [4, 4]]];
-const board_9 = sharp("I-Go_Bot/IGo_Board_9.png");
-const board_13 = sharp("I-Go_Bot/IGo_Board_13.png");
-const board_19 = sharp("I-Go_Bot/IGo_Board_19.png");
 const blackStone = sharp("I-Go_Bot/BlackStone.png");
 const whiteastone = sharp("I-Go_Bot/WhiteStone.png");
 
-let board; //盤の画像
 let boardSize; // 盤の大きさ(9,13,19)
 let nowPlayingBool = false; //今プレイ中かどうか
 let nowTurnBool = false; //今の手番　false => 黒、true => 白
@@ -46,6 +81,8 @@ let nowBrackStone = new Array; //黒い碁石の位置 (配列)
 let nowWhiteStone = new Array; //白い碁石の位置 (配列)
 let nowBrackAgehama; //黒のアゲハマの個数
 let nowWhiteAgehama; //白のアゲハマの個数
+let blackStoneArray = new Array; //黒石の画像合成用の配列
+let whiteStoneArray = new Array; //白石の画像合成用の配列
 
 client.on('ready', () => {
     console.log(`LogInAs${client.user.tag}`)
@@ -60,13 +97,26 @@ client.on('messageCreate', async msg => { //メッセージの取得
     if (text[0] === '<') text = text.split(" ").join("").split(">")[1];
     else if (text[text.length - 1] === '>') text = text.split(" ").join("").split("<")[0];
 
+    const board_9 = sharp("I-Go_Bot/IGo_Board_9.png");
+    const board_13 = sharp("I-Go_Bot/IGo_Board_13.png");
+    const board_19 = sharp("I-Go_Bot/IGo_Board_19.png");
+    let board; //盤の画像
     let thisChannel = msg.channel;
     console.log(text);
+
+    if (boardSize != null) {
+        thisChannel.send(String(boardSize));
+    }
 
     let boardPlace = text.split('-');
     if (boardPlace[0] != null && boardPlace[1] != null && stringNumberBool(boardPlace[0]) && stringNumberBool(boardPlace[1]) && nowPlayingBool) {
         thisChannel.send(boardPlace[0]);
         thisChannel.send(boardPlace[1]);
+
+        if (boardSize === 9) board = sharp("I-Go_Bot/IGo_Board_9.png");
+        else if (boardSize === 13) board = sharp("I-Go_Bot/IGo_Board_13.png");
+        else if (boardSize === 19) board = sharp("I-Go_Bot/IGo_Board_19.png");
+        JoinStone(nowTurnBool, boardPlace[0], boardPlace[1], board);
 
         //選択された場所に既に石が置かれていたら警告だけする
         if (nowBrackStone.some(function (value) {
@@ -100,28 +150,68 @@ client.on('messageCreate', async msg => { //メッセージの取得
 
     //対局開始
     let startText = text.split(',');
-    if ((startText[0] === "start" || startText[0] === "Start") && stringNumberBool(startText[1]) && stringNumberBool(startText[2])) {
+    if ((startText[0] === "start" || startText[0] === "Start")) {
+        if (startText.length <= 1) {
+            thisChannel.send("対局を始めるには```@I-Go_Bot start,盤の大きさ(,置き石の数)```と入力してください");
+            return;
+        }
+        if (startText.length == 2) startText.push("0");
+
+        if (!stringNumberBool(startText[1]) || !stringNumberBool(startText[2])) {
+            thisChannel.send("対局を始めるには```@I-Go_Bot start,盤の大きさ(,置き石の数)```と入力してください");
+            return;
+        }
+
         //if (playerBlack !== "" && playerWhite !== "") {
-        boardSize = startText[1];
+        boardSize = Number(startText[1]);
         console.log("start");
         nowPlayingBool = true;
-        if (startText[1] == 9) {
+
+        var joinArray = new Array(startText[2]);
+
+        var debugCount = 0;
+        if (boardSize == 9) {
             board = board_9;
         }
-        else if (startText[1] == 13) {
+        else if (boardSize == 13) {
             board = board_13;
-            for (var num = 0; num < startText[2]; num++) {
-                JoinStone(nowTurnBool, FirstPut_13[num[0]], FirstPut_13[num[1]]);
+            if (startText[2] > 4 || startText[2] < 0) {
+                msg.channel.send("置き石の数が正しくありません");
+                return;
+            }
+            else if (startText[2] != 0) {
+                for (var num = 0; num < startText[2]; num++) {
+                    blackStoneArray.push({
+                        input: "I-Go_Bot/BlackStone.png",
+                        blend: "over",
+                        top: FirstPut_13[startText[2] - 1][num][0] * 40 - 20,
+                        left: FirstPut_13[startText[2] - 1][num][1] * 40 - 20
+                    });
+                }
+                await board.composite(blackStoneArray);
             }
         }
-        else if (startText[1] == 19) {
+        else if (boardSize == 19) {
             board = board_19;
-            for (var num = 0; num < startText[2]; num++) {
-                JoinStone(nowTurnBool, FirstPut_19[num[0]], FirstPut_19[num[1]]);
+            if (startText[2] > 9 || startText[2] < 0) {
+                msg.channel.send("置き石の数が正しくありません");
+                return;
+            }
+            else if (startText[2] != 0) {
+                for (var num = 0; num < startText[2]; num++) {
+                    blackStoneArray.push({
+                        input: "I-Go_Bot/BlackStone.png",
+                        blend: "over",
+                        top: FirstPut_19[startText[2] - 1][num][0] * 40 - 18,
+                        left: FirstPut_19[startText[2] - 1][num][1] * 40 - 18
+                    });
+                }
+                await board.composite(blackStoneArray);
             }
         }
 
-        msg.channel.send({ files: [board] });
+        console.log(debugCount);
+        thisChannel.send({ files: [board] });
         //}
         //else {
         //    msg.channel.send("プレイヤーが揃っていません");
@@ -132,13 +222,14 @@ client.on('messageCreate', async msg => { //メッセージの取得
     //対局終了
     if (text === "finish" || text === "Finish") {
         nowPlayingBool = false;
-        nextTurnBool = false;
+        nowTurnBool = false;
         playerBlack = "";
         playerWhite = "";
         nowBrackStone.length = 0;
         nowWhiteStone.length = 0;
-        nowBrackAgehama.length = 0;
-        nowWhiteAgehama.length = 0;
+        nowBrackAgehama = 0;
+        nowWhiteAgehama = 0;
+        board = null;
     }
     //対局終了
 
@@ -150,15 +241,23 @@ client.on('messageCreate', async msg => { //メッセージの取得
         for (var num = 0; num < Number(dicePlace[0]); num++) {
             returnNum += Math.floor(Math.random() * Number(dicePlace[1])) + 1;
         }
-        msg.channel.send("" + returnNum);
+        thisChannel.send("" + returnNum);
 
     }
     // ダイスロール
 
+    if (text == "debug") {
+        let board_19let = sharp("I-Go_Bot/IGo_Board_19.png");
+        let debugBoard = board_19
+        console.log(board_19);
+        thisChannel.send({ files: [board_19let] });
+    }
+
 })
 
-client.login('ODk2NDI1MjIyODAxMDg0NTA2.YWG7Cw.fVYjQc9msXYuQiroX8GMCQFUrhM')
-
+client.login('ODk2NDI1MjIyODAxMDg0NTA2.YWG7Cw.Cv_xMP8kmM3_0B8HnQYi1QFh-eA');
+//ODk2NDI1MjIyODAxMDg0NTA2.YWG7Cw.fVYjQc9msXYuQiroX8GMCQFUrhM
+//ODk2NDI1MjIyODAxMDg0NTA2.YWG7Cw.Cv_xMP8kmM3_0B8HnQYi1QFh-eA
 ////できること
 //
 // ＠メンション Brack     ==> 発言者を黒番に設定 (対局中以外)
