@@ -1,7 +1,8 @@
 // These lines make "require" available
 import { createRequire } from "module";
 const require = createRequire(import.meta.url);
-import { Client, Intents, Channel, MessageAttachment, MessageEmbed } from 'discord.js';
+const { setTimeout } = require('timers/promises');
+import { Client, Intents, Channel, MessageAttachment, MessageEmbed, CategoryChannel, VoiceChannel } from 'discord.js';
 const client = new Client({ intents: Object.keys(Intents.FLAGS) });
 const sharp = require('sharp');
 
@@ -19,7 +20,9 @@ Array.isMatch = function (x) {
 
 // 石を取る関数～
 function StoneTrash(left, top, check) {
-    let subYetCheckArray = new Array;
+    let startPointArray = new Array;
+    let deleteArray = new Array;
+    let yetCheckArray = new Array;
     let alreadyChackArray = new Array;
     let checkColor;
     if (check) checkColor = !nowTurnBool;
@@ -31,108 +34,129 @@ function StoneTrash(left, top, check) {
         console.log("debug3");
         //つながっている黒の石を取得
         if (check) {
-            subYetCheckArray.push(blackStoneArray.indexOf([left, top]));
+            console.log(blackStoneArray);
+            console.log(left + ", " + top);
+            startPointArray.push(blackStoneArray.findIndex(Array.isMatch([left, top])));
         }
         else {
             console.log(blackStoneArray);
-            if (top != 1) subYetCheckArray.push(blackStoneArray.findIndex(Array.isMatch([left, top - 1])));
-            if (top != boardSize) subYetCheckArray.push(blackStoneArray.findIndex(Array.isMatch([left, top + 1])));
-            if (left != 1) subYetCheckArray.push(blackStoneArray.findIndex(Array.isMatch([left - 1, top])));
-            if (left != boardSize) subYetCheckArray.push(blackStoneArray.findIndex(Array.isMatch([left + 1, top])));
+            if (top != 1) startPointArray.push(blackStoneArray.findIndex(Array.isMatch([left, top - 1])));
+            if (top != boardSize) startPointArray.push(blackStoneArray.findIndex(Array.isMatch([left, top + 1])));
+            if (left != 1) startPointArray.push(blackStoneArray.findIndex(Array.isMatch([left - 1, top])));
+            if (left != boardSize) startPointArray.push(blackStoneArray.findIndex(Array.isMatch([left + 1, top])));
         }
-        console.log(subYetCheckArray);
-        subYetCheckArray = subYetCheckArray.filter(pos => pos >= 0);
-        console.log(subYetCheckArray);
-        while (subYetCheckArray.length != 0) {
-            for (let num = subYetCheckArray.length - 1; num >= 0; num--) {
-                console.log(num);
-                let topPos = blackStoneArray[subYetCheckArray[num]][1];
-                let leftPos = blackStoneArray[subYetCheckArray[num]][0];
-                alreadyChackArray.push(subYetCheckArray[num]);
-                subYetCheckArray.splice(num, 1);
-                if (topPos != 1) {
-                    let index = blackStoneArray.findIndex(Array.isMatch([leftPos, topPos - 1]));
-                    if (index != -1 && !alreadyChackArray.includes(index)) subYetCheckArray.push(index);
+        console.log(startPointArray);
+        startPointArray = startPointArray.filter(pos => pos >= 0);
+        console.log(startPointArray);
+
+        for (let startPos = 0; startPos < startPointArray.length; startPos++) {
+            alreadyChackArray.length = 0;
+            yetCheckArray.length = 0;
+            yetCheckArray.push(startPointArray[startPos]);
+            while (yetCheckArray.length != 0) {
+                for (let num = yetCheckArray.length - 1; num >= 0;) {
+                    console.log(num);
+                    let topPos = blackStoneArray[yetCheckArray[num]][1];
+                    let leftPos = blackStoneArray[yetCheckArray[num]][0];
+                    alreadyChackArray.push(yetCheckArray[num]);
+                    yetCheckArray.splice(num, 1);
+                    if (topPos != 1) {
+                        let index = blackStoneArray.findIndex(Array.isMatch([leftPos, topPos - 1]));
+                        if (index != -1 && !alreadyChackArray.includes(index)) yetCheckArray.push(index);
+                    }
+                    if (topPos != boardSize) {
+                        let index = blackStoneArray.findIndex(Array.isMatch([leftPos, topPos + 1]));
+                        if (index != -1 && !alreadyChackArray.includes(index)) yetCheckArray.push(index);
+                    }
+                    if (leftPos != 1) {
+                        let index = blackStoneArray.findIndex(Array.isMatch([leftPos - 1, topPos]));
+                        if (index != -1 && !alreadyChackArray.includes(index)) yetCheckArray.push(index);
+                    }
+                    if (leftPos != boardSize) {
+                        let index = blackStoneArray.findIndex(Array.isMatch([leftPos + 1, topPos]));
+                        if (index != -1 && !alreadyChackArray.includes(index)) yetCheckArray.push(index);
+                    }
+                    yetCheckArray = yetCheckArray.filter(pos => pos >= 0);
+                    num = yetCheckArray.length - 1;
                 }
-                if (topPos != boardSize) {
-                    let index = blackStoneArray.findIndex(Array.isMatch([leftPos, topPos + 1]));
-                    if (index != -1 && !alreadyChackArray.includes(index)) subYetCheckArray.push(index);
-                }
-                if (leftPos != 1) {
-                    let index = blackStoneArray.findIndex(Array.isMatch([leftPos - 1, topPos]));
-                    if (index != -1 && !alreadyChackArray.includes(index)) subYetCheckArray.push(index);
-                }
-                if (leftPos != boardSize) {
-                    let index = blackStoneArray.findIndex(Array.isMatch([leftPos + 1, topPos]));
-                    if (index != -1 && !alreadyChackArray.includes(index)) subYetCheckArray.push(index);
-                }
-                subYetCheckArray = subYetCheckArray.filter(pos => pos >= 0);
-                num = subYetCheckArray.length - 1;
+            }
+            console.log("debug4  " + alreadyChackArray);
+
+            let deleteBool = true;
+            let connetctArray = blackStoneArray.concat(whiteStoneArray);
+            for (let num = 0; num < alreadyChackArray.length; num++) {
+                let thisCheckTopPos = blackStoneArray[alreadyChackArray[num]][1];
+                let thisCheckLeftPos = blackStoneArray[alreadyChackArray[num]][0];
+                if (thisCheckLeftPos != 1 && connetctArray.findIndex(Array.isMatch([thisCheckLeftPos - 1, thisCheckTopPos])) == -1) { deleteBool = false; break; }
+                if (thisCheckLeftPos != boardSize && connetctArray.findIndex(Array.isMatch([thisCheckLeftPos + 1, thisCheckTopPos])) == -1) { deleteBool = false; break; }
+                if (thisCheckTopPos != 1 && connetctArray.findIndex(Array.isMatch([thisCheckLeftPos, thisCheckTopPos - 1])) == -1) { deleteBool = false; break; }
+                if (thisCheckTopPos != boardSize && connetctArray.findIndex(Array.isMatch([thisCheckLeftPos, thisCheckTopPos + 1])) == -1) { deleteBool = false; break; }
+            }
+            if (deleteBool) {
+                console.log(alreadyChackArray);
+                deleteArray = deleteArray.concat(alreadyChackArray);
             }
         }
-        console.log("debug4  " + alreadyChackArray);
-
-        let connetctArray = blackStoneArray.concat(whiteStoneArray);
-        for (let num = 0; num < alreadyChackArray.length; num++) {
-            let thisCheckTopPos = blackStoneArray[alreadyChackArray[num]][1];
-            let thisCheckLeftPos = blackStoneArray[alreadyChackArray[num]][0];
-            if (thisCheckLeftPos != 1 && connetctArray.findIndex(Array.isMatch([thisCheckLeftPos - 1, thisCheckTopPos])) == -1) return [];
-            if (thisCheckLeftPos != boardSize && connetctArray.findIndex(Array.isMatch([thisCheckLeftPos + 1, thisCheckTopPos])) == -1) return [];
-            if (thisCheckTopPos != 1 && connetctArray.findIndex(Array.isMatch([thisCheckLeftPos, thisCheckTopPos - 1])) == -1) return [];
-            if (thisCheckTopPos != boardSize && connetctArray.findIndex(Array.isMatch([thisCheckLeftPos, thisCheckTopPos + 1])) == -1) return [];
-        }
-        console.log(alreadyChackArray);
-        return alreadyChackArray;
+        return Array.from(new Set(deleteArray));
     }
     else {
         //つながっている白の石を取得
         if (check) {
-            subYetCheckArray.push(whiteStoneArray.indexOf([left, top]));
+            startPointArray.push(whiteStoneArray.findIndex(Array.isMatch([left, top])));
         }
         else {
-            if (top != 1) subYetCheckArray.push(whiteStoneArray.findIndex(Array.isMatch([left, top - 1])));
-            if (top != boardSize) subYetCheckArray.push(whiteStoneArray.findIndex(Array.isMatch([left, top + 1])));
-            if (left != 1) subYetCheckArray.push(whiteStoneArray.findIndex(Array.isMatch([left - 1, top])));
-            if (left != boardSize) subYetCheckArray.push(whiteStoneArray.findIndex(Array.isMatch([left + 1, top])));
+            if (top != 1) startPointArray.push(whiteStoneArray.findIndex(Array.isMatch([left, top - 1])));
+            if (top != boardSize) startPointArray.push(whiteStoneArray.findIndex(Array.isMatch([left, top + 1])));
+            if (left != 1) startPointArray.push(whiteStoneArray.findIndex(Array.isMatch([left - 1, top])));
+            if (left != boardSize) startPointArray.push(whiteStoneArray.findIndex(Array.isMatch([left + 1, top])));
         }
-        subYetCheckArray = subYetCheckArray.filter(pos => pos >= 0);
-        while (subYetCheckArray.length != 0) {
-            for (let num = subYetCheckArray.length - 1; num >= 0; num--) {
-                let topPos = whiteStoneArray[subYetCheckArray[num]][1];
-                let leftPos = whiteStoneArray[subYetCheckArray[num]][0];
-                alreadyChackArray.push(subYetCheckArray[num]);
-                subYetCheckArray.splice(num, 1);
-                if (topPos != 1) {
-                    let index = whiteStoneArray.findIndex(Array.isMatch([leftPos, topPos - 1]));
-                    if (index != -1 && !alreadyChackArray.includes(index)) subYetCheckArray.push(index);
+        startPointArray = startPointArray.filter(pos => pos >= 0);
+        for (let startPos = 0; startPos < startPointArray.length; startPos++) {
+            alreadyChackArray.length = 0;
+            yetCheckArray.length = 0;
+            yetCheckArray.push(startPointArray[startPos]);
+            while (yetCheckArray.length != 0) {
+                for (let num = yetCheckArray.length - 1; num >= 0;) {
+                    let topPos = whiteStoneArray[yetCheckArray[num]][1];
+                    let leftPos = whiteStoneArray[yetCheckArray[num]][0];
+                    alreadyChackArray.push(yetCheckArray[num]);
+                    yetCheckArray.splice(num, 1);
+                    if (topPos != 1) {
+                        let index = whiteStoneArray.findIndex(Array.isMatch([leftPos, topPos - 1]));
+                        if (index != -1 && !alreadyChackArray.includes(index)) yetCheckArray.push(index);
+                    }
+                    if (topPos != boardSize) {
+                        let index = whiteStoneArray.findIndex(Array.isMatch([leftPos, topPos + 1]));
+                        if (index != -1 && !alreadyChackArray.includes(index)) yetCheckArray.push(index);
+                    }
+                    if (leftPos != 1) {
+                        let index = whiteStoneArray.findIndex(Array.isMatch([leftPos - 1, topPos]));
+                        if (index != -1 && !alreadyChackArray.includes(index)) yetCheckArray.push(index);
+                    }
+                    if (leftPos != boardSize) {
+                        let index = whiteStoneArray.findIndex(Array.isMatch([leftPos + 1, topPos]));
+                        if (index != -1 && !alreadyChackArray.includes(index)) yetCheckArray.push(index);
+                    }
+                    yetCheckArray = yetCheckArray.filter(pos => pos >= 0);
+                    num = yetCheckArray.length - 1;
                 }
-                if (topPos != boardSize) {
-                    let index = whiteStoneArray.findIndex(Array.isMatch([leftPos, topPos + 1]));
-                    if (index != -1 && !alreadyChackArray.includes(index)) subYetCheckArray.push(index);
-                }
-                if (leftPos != 1) {
-                    let index = whiteStoneArray.findIndex(Array.isMatch([leftPos - 1, topPos]));
-                    if (index != -1 && !alreadyChackArray.includes(index)) subYetCheckArray.push(index);
-                }
-                if (leftPos != boardSize) {
-                    let index = whiteStoneArray.findIndex(Array.isMatch([leftPos + 1, topPos]));
-                    if (index != -1 && !alreadyChackArray.includes(index)) subYetCheckArray.push(index);
-                }
-                subYetCheckArray = subYetCheckArray.filter(pos => pos >= 0);
-                num = subYetCheckArray.length - 1;
+            }
+
+            let deleteBool = true;
+            let connetctArray = whiteStoneArray.concat(blackStoneArray);
+            for (let num = 0; num < alreadyChackArray.length; num++) {
+                let thisCheckTopPos = whiteStoneArray[alreadyChackArray[num]][1];
+                let thisCheckLeftPos = whiteStoneArray[alreadyChackArray[num]][0];
+                if (thisCheckLeftPos != 1 && connetctArray.findIndex(Array.isMatch([thisCheckLeftPos - 1, thisCheckTopPos])) == -1) { deleteBool = false; break; }
+                if (thisCheckLeftPos != boardSize && connetctArray.findIndex(Array.isMatch([thisCheckLeftPos + 1, thisCheckTopPos])) == -1) { deleteBool = false; break; }
+                if (thisCheckTopPos != 1 && connetctArray.findIndex(Array.isMatch([thisCheckLeftPos, thisCheckTopPos - 1])) == -1) { deleteBool = false; break; }
+                if (thisCheckTopPos != boardSize && connetctArray.findIndex(Array.isMatch([thisCheckLeftPos, thisCheckTopPos + 1])) == -1) { deleteBool = false; break; }
+            }
+            if (deleteBool) {
+                deleteArray = deleteArray.concat(alreadyChackArray);
             }
         }
-
-        let connetctArray = whiteStoneArray.concat(blackStoneArray);
-        for (let num = 0; num < alreadyChackArray.length; num++) {
-            let thisCheckTopPos = whiteStoneArray[alreadyChackArray[num]][1];
-            let thisCheckLeftPos = whiteStoneArray[alreadyChackArray[num]][0];
-            if (thisCheckLeftPos != 1 && connetctArray.findIndex(Array.isMatch([thisCheckLeftPos - 1, thisCheckTopPos])) == -1) return [];
-            if (thisCheckLeftPos != boardSize && connetctArray.findIndex(Array.isMatch([thisCheckLeftPos + 1, thisCheckTopPos])) == -1) return [];
-            if (thisCheckTopPos != 1 && connetctArray.findIndex(Array.isMatch([thisCheckLeftPos, thisCheckTopPos - 1])) == -1) return [];
-            if (thisCheckTopPos != boardSize && connetctArray.findIndex(Array.isMatch([thisCheckLeftPos, thisCheckTopPos + 1])) == -1) return [];
-        }
-        return alreadyChackArray;
+        return Array.from(new Set(deleteArray));
     }
 }
 // ～石を取る関数
@@ -140,14 +164,16 @@ function StoneTrash(left, top, check) {
 // 画像合成関数～
 async function JoinStone() {
     let image;
+    let nextPlayer;
     if (boardSize == 9) image = sharp("I-Go_Bot/IGo_Board_9.png");
     else if (boardSize == 13) image = sharp("I-Go_Bot/IGo_Board_13.png");
     else if (boardSize == 19) image = sharp("I-Go_Bot/IGo_Board_19.png");
     let connetctArray = blackStoneImageArray.concat(whiteStoneImageArray);
     await image.composite(connetctArray);
-    //await image.composite(whiteStoneArray);
+    if (nowTurnBool) nextPlayer = playerBlack.user.toString();
+    else nextPlayer = playerWhite.user.toString();
     turnNum++;
-    //thisChannel.send({ files: [image] });
+    thisChannel.bulkDelete(2);
     let file = new MessageAttachment(image);
     thisChannel.send({
         embeds: [{
@@ -160,6 +186,9 @@ async function JoinStone() {
                 {
                     name: "アゲハマ",
                     value: "黒: " + blackAgehama + ",  白: " + whiteAgehama
+                }, {
+                    name: "次の手番は",
+                    value: nextPlayer
                 }
             ]
         }],
@@ -172,13 +201,11 @@ const FirstPut_19 = [/*1*/[[4, 16]], /*2*/[[4, 16], [16, 4]], /*3*/[[4, 16], [16
     /*5*/[[4, 16], [16, 4], [16, 16], [4, 4], [10, 10]], /*6*/[[4, 16], [16, 4], [16, 16], [4, 4], [16, 10], [4, 10]], /*7*/[[4, 16], [16, 4], [16, 16], [4, 4], [10, 16], [10, 4], [10, 10]],
     /*8*/[[4, 16], [16, 4], [16, 16], [4, 4], [10, 16], [10, 4], [4, 10], [16, 10]], /*9*/[[4, 16], [16, 4], [16, 16], [4, 4], [10, 16], [10, 4], [4, 10], [16, 10], [10, 10]]];
 const FirstPut_13 = [/*1*/[[4, 10]], /*2*/[[4, 10], [10, 4]], /*3*/[[4, 10], [10, 4], [10, 10]], /*4*/[[4, 10], [10, 4], [10, 10], [4, 4]]];
-const blackStone = sharp("I-Go_Bot/BlackStone.png");
-const whiteastone = sharp("I-Go_Bot/WhiteStone.png");
 
 let boardSize; // 盤の大きさ(9,13,19)
 let nowPlayingBool = false; //今プレイ中かどうか
 let nowTurnBool = false; //今の手番　false => 黒、true => 白
-let playerBlack = "", playerWhite = ""; //対戦しているユーザー
+let playerBlack = null, playerWhite = null; //対戦しているユーザー
 let blackAgehama = 0; //黒のアゲハマの個数
 let whiteAgehama = 0; //白のアゲハマの個数
 let blackStoneImageArray = []; //黒石の位置の配列
@@ -193,6 +220,7 @@ client.on('ready', () => {
 })
 
 client.on('messageCreate', async msg => { //メッセージの取得
+    if (msg.channel.name != "bot") { console.log("ret"); return; }
     if (msg.author.bot) return; // bot の発言は無視
     let text = msg.content;
 
@@ -205,13 +233,6 @@ client.on('messageCreate', async msg => { //メッセージの取得
     if (text[0] === '<') text = text.split(" ").join("").split(">")[1];
     else if (text[text.length - 1] === '>') text = text.split(" ").join("").split("<")[0];
 
-    if (text === "del") {
-        console.log("del");
-        await msg.delete();
-    }
-    const board_9 = sharp("I-Go_Bot/IGo_Board_9.png");
-    const board_13 = sharp("I-Go_Bot/IGo_Board_13.png");
-    const board_19 = sharp("I-Go_Bot/IGo_Board_19.png");
     let board; //盤の画像
     thisChannel = msg.channel;
     await msg.delete();
@@ -220,37 +241,41 @@ client.on('messageCreate', async msg => { //メッセージの取得
     if (!nowPlayingBool) {
         if (text === "black" || text === "Black") {
             //if (playerWhite == msg.author) playerWhite = "";
-            playerBlack = msg.member.displayName; //発言したユーザーを黒番に設定
-            let beforeMessage = await thisChannel.messages.fetch({ before: msg.id, limit: 1 })
-                .then(messages => messages.first())
-                .catch(console.error);
-            beforeMessage.delete();
-
+            playerBlack = msg.member; //発言したユーザーを黒番に設定
+            let blackName;
+            let whiteName;
+            if (playerBlack == null) blackName = "";
+            else blackName = playerBlack.displayName;
+            if (playerWhite == null) whiteName = "";
+            else whiteName = playerWhite.displayName;
+            thisChannel.bulkDelete(1);
             thisChannel.send({
                 embeds: [{
                     fields: [
                         {
                             name: "待機中",
-                            value: "黒: " + playerBlack + ",   白: " + playerWhite
+                            value: "黒: " + blackName + ",   白: " + whiteName
                         }
                     ]
                 }],
             });
         }
-        if (text === "white" || text === "White") {
+        else if (text === "white" || text === "White") {
             //if (playerBlack == msg.author) playerBlack = "";
-            playerWhite = msg.member.displayName; //発言したユーザーを白番に設定
-            let beforeMessage = await thisChannel.messages.fetch({ before: msg.id, limit: 1 })
-                .then(messages => messages.first())
-                .catch(console.error);
-            beforeMessage.delete();
-
+            playerWhite = msg.member; //発言したユーザーを白番に設定
+            let blackName;
+            let whiteName;
+            if (playerBlack == null) blackName = "";
+            else blackName = playerBlack.displayName;
+            if (playerWhite == null) whiteName = "";
+            else whiteName = playerWhite.displayName;
+            thisChannel.bulkDelete(1);
             thisChannel.send({
                 embeds: [{
                     fields: [
                         {
                             name: "待機中",
-                            value: "黒: " + playerBlack + ",   白: " + playerWhite
+                            value: "黒: " + blackName + ",   白: " + whiteName
                         }
                     ]
                 }],
@@ -270,12 +295,14 @@ client.on('messageCreate', async msg => { //メッセージの取得
         }) || whiteStoneArray.some(function (value) {
             return value[0] === Number(boardPlace[0]) && value[1] === Number(boardPlace[1]);
         })) {
-            thisChannel.send("選択された場所には既に石があります。別の場所を指定してください");
+            const reply = await thisChannel.send("選択された場所には既に石があります。別の場所を指定してください");
+            await setTimeout(2500);
+            await reply.delete();
             return;
         }
 
-        let keepBlackStone = blackStoneArray;
-        let keepWhiteStone = whiteStoneArray;
+        let keepBlackStone = Array.from(blackStoneArray);
+        let keepWhiteStone = Array.from(whiteStoneArray);
 
         if (nowTurnBool) whiteStoneArray.push([Number(boardPlace[0]), Number(boardPlace[1])]);
         else blackStoneArray.push([Number(boardPlace[0]), Number(boardPlace[1])]);
@@ -301,9 +328,15 @@ client.on('messageCreate', async msg => { //メッセージの取得
         if (delArray.length == 0) {
             let checkArray = StoneTrash(Number(boardPlace[0]), Number(boardPlace[1]), true);
             if (checkArray.length != 0) {
+                console.log("着手禁止点");
+                console.log(keepBlackStone);
+                console.log(blackStoneArray);
                 blackStoneArray = keepBlackStone;
                 whiteStoneArray = keepWhiteStone;
-                thisChannel.send("着手禁止点です");
+                console.log(blackStoneArray);
+                const reply = await thisChannel.send("着手禁止点です");
+                await setTimeout(2500);
+                await reply.delete();
                 return;
             }
         }
@@ -392,17 +425,21 @@ client.on('messageCreate', async msg => { //メッセージの取得
     let startText = text.split(',');
     if ((startText[0] === "start" || startText[0] === "Start")) {
         if (startText.length <= 1) {
-            thisChannel.send("対局を始めるには```@I-Go_Bot start,盤の大きさ(,置き石の数)```と入力してください");
+            const reply = await thisChannel.send("対局を始めるには```@I-Go_Bot start,盤の大きさ(,置き石の数)```と入力してください");
+            await setTimeout(2500);
+            await reply.delete();
             return;
         }
         if (startText.length == 2) startText.push("0");
 
         if (!stringNumberBool(startText[1]) || !stringNumberBool(startText[2])) {
-            thisChannel.send("対局を始めるには```@I-Go_Bot start,盤の大きさ(,置き石の数)```と入力してください");
+            const reply = await thisChannel.send("対局を始めるには```@I-Go_Bot start,盤の大きさ(,置き石の数)```と入力してください");
+            await setTimeout(2500);
+            await reply.delete();
             return;
         }
 
-        if (playerBlack !== "" && playerWhite !== "") {
+        if (playerBlack !== null && playerWhite !== null) {
             boardSize = Number(startText[1]);
             console.log("start");
             if (startText[2] > 1) nowTurnBool = true;
@@ -412,12 +449,14 @@ client.on('messageCreate', async msg => { //メッセージの取得
 
             var debugCount = 0;
             if (boardSize == 9) {
-                board = board_9;
+                board = sharp("I-Go_Bot/IGo_Board_9.png");
             }
             else if (boardSize == 13) {
                 board = sharp("I-Go_Bot/IGo_Board_13.png");
                 if (startText[2] > 4 || startText[2] < 0) {
-                    thisChannel.send("置き石の数が正しくありません");
+                    const reply = await thisChannel.send("置き石の数が正しくありません");
+                    await setTimeout(2500);
+                    await reply.delete();
                     return;
                 }
                 else if (startText[2] != 0) {
@@ -434,9 +473,11 @@ client.on('messageCreate', async msg => { //メッセージの取得
                 }
             }
             else if (boardSize == 19) {
-                board = board_19;
+                board = sharp("I-Go_Bot/IGo_Board_19.png");
                 if (startText[2] > 9 || startText[2] < 0) {
-                    thisChannel.send("置き石の数が正しくありません");
+                    const reply = await thisChannel.send("置き石の数が正しくありません");
+                    await setTimeout(2500);
+                    await reply.delete();
                     return;
                 }
                 else if (startText[2] != 0) {
@@ -452,14 +493,16 @@ client.on('messageCreate', async msg => { //メッセージの取得
                     await board.composite(blackStoneImageArray);
                 }
             }
-
-            let beforeMessage = await thisChannel.messages.fetch({ before: msg.id, limit: 1 })
-                .then(messages => messages.first())
-                .catch(console.error);
-            beforeMessage.delete();
+            else {
+                const reply = await thisChannel.send("番の大きさには 9, 13, 19 が指定できます");
+                await setTimeout(2500);
+                await reply.delete();
+                return;
+            }
+            await thisChannel.bulkDelete(5);
             //thisChannel.send({ files: [board] });
             let file = new MessageAttachment(board);
-            thisChannel.send({
+            await thisChannel.send({
                 embeds: [{
                     title: "対局中",
                     description: "0手目",
@@ -480,7 +523,9 @@ client.on('messageCreate', async msg => { //メッセージの取得
             turnNum = 0;
         }
         else {
-            msg.channel.send("プレイヤーが揃っていません");
+            const reply = await thisChannel.send("プレイヤーが揃っていません");
+            await setTimeout(2500);
+            await reply.delete();
         }
     }
     //対局開始
@@ -507,8 +552,8 @@ client.on('messageCreate', async msg => { //メッセージの取得
         });
         nowPlayingBool = false;
         nowTurnBool = false;
-        playerBlack = "";
-        playerWhite = "";
+        playerBlack = null;
+        playerWhite = null;
         blackAgehama = 0;
         whiteAgehama = 0;
         blackStoneImageArray.length = 0;
@@ -541,13 +586,42 @@ client.on('messageCreate', async msg => { //メッセージの取得
 
     }
     // ダイスロール
-})
 
-client.login('ODk2NDI1MjIyODAxMDg0NTA2.YWG7Cw.n_I9Pymd6kR7V-y0PwOxyK-Pvk0');
+    ////チャンネル作成
+    //let makeText = text.split(',');
+    //if (makeText[0] == "makeChannel") {
+    //    msg.channel.parent.clone().then(cat => {
+    //        msg.guild.channels.create('対局', {
+    //            type: 'text',
+    //            parent: cat.id
+    //        })
+    //    })
+    //}
+    ////チャンネル作成
+
+    //最初の処理
+    if (text == "firstRun") {
+        await thisChannel.send({
+            embeds: [{
+                fields: [
+                    {
+                        name: "待機中",
+                        value: "黒: ,   白: "
+                    }
+                ]
+            }],
+        });
+    }
+    //最初の処理
+});
+
+client.login('ODk2NDI1MjIyODAxMDg0NTA2.YWG7Cw.c1FUc9tNF1BRlsG6cL0gAUYa_h0');
 //ODk2NDI1MjIyODAxMDg0NTA2.YWG7Cw.fVYjQc9msXYuQiroX8GMCQFUrhM
 //ODk2NDI1MjIyODAxMDg0NTA2.YWG7Cw.Cv_xMP8kmM3_0B8HnQYi1QFh-eA
 //ODk2NDI1MjIyODAxMDg0NTA2.YWG7Cw.7dORqTnhCcDx_EiwOECr7mlLQVU
 //ODk2NDI1MjIyODAxMDg0NTA2.YWG7Cw.n_I9Pymd6kR7V-y0PwOxyK-Pvk0
+//ODk2NDI1MjIyODAxMDg0NTA2.YWG7Cw.c1FUc9tNF1BRlsG6cL0gAUYa_h0
+//ODk2NDI1MjIyODAxMDg0NTA2.YWG7Cw.c1FUc9tNF1BRlsG6cL0gAUYa_h0
 ////できること
 //
 // ＠メンション Brack     ==> 発言者を黒番に設定 (対局中以外)
