@@ -6,7 +6,7 @@ import { Client, Intents, Channel, MessageAttachment, MessageEmbed, CategoryChan
 const client = new Client({ intents: Object.keys(Intents.FLAGS) });
 const sharp = require('sharp');
 
-const stringNumberBool = n => typeof n === "string" && n !== "" && !isNaN(n); // int åŒ–ã§ãã‚‹ã‹
+const stringNumberBool = n => typeof n === "string" && n !== "" && !isNaN(n); // int ‰»‚Å‚«‚é‚©
 
 Array.isMatch = function (x) {
     return function (y) {
@@ -18,32 +18,32 @@ Array.isMatch = function (x) {
     }
 }
 
-// çŸ³ã‚’å–ã‚‹é–¢æ•°ï½
+// Î‚ğæ‚éŠÖ”`
 function StoneTrash(left, top, check) {
     let startPointArray = new Array;
     let deleteArray = new Array;
     let yetCheckArray = new Array;
     let alreadyChackArray = new Array;
     let checkColor;
-    if (check) checkColor = !nowTurnBool;
-    else checkColor = nowTurnBool;
+    if (check) checkColor = !nowTurnBool[thisServer];
+    else checkColor = nowTurnBool[thisServer];
 
     console.log("debug2" + checkColor);
 
     if (checkColor) {
         console.log("debug3");
-        //ã¤ãªãŒã£ã¦ã„ã‚‹é»’ã®çŸ³ã‚’å–å¾—
+        //‚Â‚È‚ª‚Á‚Ä‚¢‚é•‚ÌÎ‚ğæ“¾
         if (check) {
-            console.log(blackStoneArray);
+            console.log(blackStoneArray[thisServer]);
             console.log(left + ", " + top);
-            startPointArray.push(blackStoneArray.findIndex(Array.isMatch([left, top])));
+            startPointArray.push(blackStoneArray[thisServer].findIndex(Array.isMatch([left, top])));
         }
         else {
-            console.log(blackStoneArray);
-            if (top != 1) startPointArray.push(blackStoneArray.findIndex(Array.isMatch([left, top - 1])));
-            if (top != boardSize) startPointArray.push(blackStoneArray.findIndex(Array.isMatch([left, top + 1])));
-            if (left != 1) startPointArray.push(blackStoneArray.findIndex(Array.isMatch([left - 1, top])));
-            if (left != boardSize) startPointArray.push(blackStoneArray.findIndex(Array.isMatch([left + 1, top])));
+            console.log(blackStoneArray[thisServer]);
+            if (top != 1) startPointArray.push(blackStoneArray[thisServer].findIndex(Array.isMatch([left, top - 1])));
+            if (top != boardSize[thisServer]) startPointArray.push(blackStoneArray[thisServer].findIndex(Array.isMatch([left, top + 1])));
+            if (left != 1) startPointArray.push(blackStoneArray[thisServer].findIndex(Array.isMatch([left - 1, top])));
+            if (left != boardSize[thisServer]) startPointArray.push(blackStoneArray[thisServer].findIndex(Array.isMatch([left + 1, top])));
         }
         console.log(startPointArray);
         startPointArray = startPointArray.filter(pos => pos >= 0);
@@ -56,24 +56,24 @@ function StoneTrash(left, top, check) {
             while (yetCheckArray.length != 0) {
                 for (let num = yetCheckArray.length - 1; num >= 0;) {
                     console.log(num);
-                    let topPos = blackStoneArray[yetCheckArray[num]][1];
-                    let leftPos = blackStoneArray[yetCheckArray[num]][0];
+                    let topPos = blackStoneArray[thisServer][yetCheckArray[num]][1];
+                    let leftPos = blackStoneArray[thisServer][yetCheckArray[num]][0];
                     alreadyChackArray.push(yetCheckArray[num]);
                     yetCheckArray.splice(num, 1);
                     if (topPos != 1) {
-                        let index = blackStoneArray.findIndex(Array.isMatch([leftPos, topPos - 1]));
+                        let index = blackStoneArray[thisServer].findIndex(Array.isMatch([leftPos, topPos - 1]));
                         if (index != -1 && !alreadyChackArray.includes(index)) yetCheckArray.push(index);
                     }
-                    if (topPos != boardSize) {
-                        let index = blackStoneArray.findIndex(Array.isMatch([leftPos, topPos + 1]));
+                    if (topPos != boardSize[thisServer]) {
+                        let index = blackStoneArray[thisServer].findIndex(Array.isMatch([leftPos, topPos + 1]));
                         if (index != -1 && !alreadyChackArray.includes(index)) yetCheckArray.push(index);
                     }
                     if (leftPos != 1) {
-                        let index = blackStoneArray.findIndex(Array.isMatch([leftPos - 1, topPos]));
+                        let index = blackStoneArray[thisServer].findIndex(Array.isMatch([leftPos - 1, topPos]));
                         if (index != -1 && !alreadyChackArray.includes(index)) yetCheckArray.push(index);
                     }
-                    if (leftPos != boardSize) {
-                        let index = blackStoneArray.findIndex(Array.isMatch([leftPos + 1, topPos]));
+                    if (leftPos != boardSize[thisServer]) {
+                        let index = blackStoneArray[thisServer].findIndex(Array.isMatch([leftPos + 1, topPos]));
                         if (index != -1 && !alreadyChackArray.includes(index)) yetCheckArray.push(index);
                     }
                     yetCheckArray = yetCheckArray.filter(pos => pos >= 0);
@@ -83,14 +83,14 @@ function StoneTrash(left, top, check) {
             console.log("debug4  " + alreadyChackArray);
 
             let deleteBool = true;
-            let connetctArray = blackStoneArray.concat(whiteStoneArray);
+            let connetctArray = blackStoneArray[thisServer].concat(whiteStoneArray[thisServer]);
             for (let num = 0; num < alreadyChackArray.length; num++) {
-                let thisCheckTopPos = blackStoneArray[alreadyChackArray[num]][1];
-                let thisCheckLeftPos = blackStoneArray[alreadyChackArray[num]][0];
+                let thisCheckTopPos = blackStoneArray[thisServer][alreadyChackArray[num]][1];
+                let thisCheckLeftPos = blackStoneArray[thisServer][alreadyChackArray[num]][0];
                 if (thisCheckLeftPos != 1 && connetctArray.findIndex(Array.isMatch([thisCheckLeftPos - 1, thisCheckTopPos])) == -1) { deleteBool = false; break; }
-                if (thisCheckLeftPos != boardSize && connetctArray.findIndex(Array.isMatch([thisCheckLeftPos + 1, thisCheckTopPos])) == -1) { deleteBool = false; break; }
+                if (thisCheckLeftPos != boardSize[thisServer] && connetctArray.findIndex(Array.isMatch([thisCheckLeftPos + 1, thisCheckTopPos])) == -1) { deleteBool = false; break; }
                 if (thisCheckTopPos != 1 && connetctArray.findIndex(Array.isMatch([thisCheckLeftPos, thisCheckTopPos - 1])) == -1) { deleteBool = false; break; }
-                if (thisCheckTopPos != boardSize && connetctArray.findIndex(Array.isMatch([thisCheckLeftPos, thisCheckTopPos + 1])) == -1) { deleteBool = false; break; }
+                if (thisCheckTopPos != boardSize[thisServer] && connetctArray.findIndex(Array.isMatch([thisCheckLeftPos, thisCheckTopPos + 1])) == -1) { deleteBool = false; break; }
             }
             if (deleteBool) {
                 console.log(alreadyChackArray);
@@ -100,15 +100,15 @@ function StoneTrash(left, top, check) {
         return Array.from(new Set(deleteArray));
     }
     else {
-        //ã¤ãªãŒã£ã¦ã„ã‚‹ç™½ã®çŸ³ã‚’å–å¾—
+        //‚Â‚È‚ª‚Á‚Ä‚¢‚é”’‚ÌÎ‚ğæ“¾
         if (check) {
-            startPointArray.push(whiteStoneArray.findIndex(Array.isMatch([left, top])));
+            startPointArray.push(whiteStoneArray[thisServer].findIndex(Array.isMatch([left, top])));
         }
         else {
-            if (top != 1) startPointArray.push(whiteStoneArray.findIndex(Array.isMatch([left, top - 1])));
-            if (top != boardSize) startPointArray.push(whiteStoneArray.findIndex(Array.isMatch([left, top + 1])));
-            if (left != 1) startPointArray.push(whiteStoneArray.findIndex(Array.isMatch([left - 1, top])));
-            if (left != boardSize) startPointArray.push(whiteStoneArray.findIndex(Array.isMatch([left + 1, top])));
+            if (top != 1) startPointArray.push(whiteStoneArray[thisServer].findIndex(Array.isMatch([left, top - 1])));
+            if (top != boardSize[thisServer]) startPointArray.push(whiteStoneArray[thisServer].findIndex(Array.isMatch([left, top + 1])));
+            if (left != 1) startPointArray.push(whiteStoneArray[thisServer].findIndex(Array.isMatch([left - 1, top])));
+            if (left != boardSize[thisServer]) startPointArray.push(whiteStoneArray[thisServer].findIndex(Array.isMatch([left + 1, top])));
         }
         startPointArray = startPointArray.filter(pos => pos >= 0);
         for (let startPos = 0; startPos < startPointArray.length; startPos++) {
@@ -117,24 +117,24 @@ function StoneTrash(left, top, check) {
             yetCheckArray.push(startPointArray[startPos]);
             while (yetCheckArray.length != 0) {
                 for (let num = yetCheckArray.length - 1; num >= 0;) {
-                    let topPos = whiteStoneArray[yetCheckArray[num]][1];
-                    let leftPos = whiteStoneArray[yetCheckArray[num]][0];
+                    let topPos = whiteStoneArray[thisServer][yetCheckArray[num]][1];
+                    let leftPos = whiteStoneArray[thisServer][yetCheckArray[num]][0];
                     alreadyChackArray.push(yetCheckArray[num]);
                     yetCheckArray.splice(num, 1);
                     if (topPos != 1) {
-                        let index = whiteStoneArray.findIndex(Array.isMatch([leftPos, topPos - 1]));
+                        let index = whiteStoneArray[thisServer].findIndex(Array.isMatch([leftPos, topPos - 1]));
                         if (index != -1 && !alreadyChackArray.includes(index)) yetCheckArray.push(index);
                     }
-                    if (topPos != boardSize) {
-                        let index = whiteStoneArray.findIndex(Array.isMatch([leftPos, topPos + 1]));
+                    if (topPos != boardSize[thisServer]) {
+                        let index = whiteStoneArray[thisServer].findIndex(Array.isMatch([leftPos, topPos + 1]));
                         if (index != -1 && !alreadyChackArray.includes(index)) yetCheckArray.push(index);
                     }
                     if (leftPos != 1) {
-                        let index = whiteStoneArray.findIndex(Array.isMatch([leftPos - 1, topPos]));
+                        let index = whiteStoneArray[thisServer].findIndex(Array.isMatch([leftPos - 1, topPos]));
                         if (index != -1 && !alreadyChackArray.includes(index)) yetCheckArray.push(index);
                     }
-                    if (leftPos != boardSize) {
-                        let index = whiteStoneArray.findIndex(Array.isMatch([leftPos + 1, topPos]));
+                    if (leftPos != boardSize[thisServer]) {
+                        let index = whiteStoneArray[thisServer].findIndex(Array.isMatch([leftPos + 1, topPos]));
                         if (index != -1 && !alreadyChackArray.includes(index)) yetCheckArray.push(index);
                     }
                     yetCheckArray = yetCheckArray.filter(pos => pos >= 0);
@@ -143,14 +143,14 @@ function StoneTrash(left, top, check) {
             }
 
             let deleteBool = true;
-            let connetctArray = whiteStoneArray.concat(blackStoneArray);
+            let connetctArray = whiteStoneArray[thisServer].concat(blackStoneArray[thisServer]);
             for (let num = 0; num < alreadyChackArray.length; num++) {
-                let thisCheckTopPos = whiteStoneArray[alreadyChackArray[num]][1];
-                let thisCheckLeftPos = whiteStoneArray[alreadyChackArray[num]][0];
+                let thisCheckTopPos = whiteStoneArray[thisServer][alreadyChackArray[num]][1];
+                let thisCheckLeftPos = whiteStoneArray[thisServer][alreadyChackArray[num]][0];
                 if (thisCheckLeftPos != 1 && connetctArray.findIndex(Array.isMatch([thisCheckLeftPos - 1, thisCheckTopPos])) == -1) { deleteBool = false; break; }
-                if (thisCheckLeftPos != boardSize && connetctArray.findIndex(Array.isMatch([thisCheckLeftPos + 1, thisCheckTopPos])) == -1) { deleteBool = false; break; }
+                if (thisCheckLeftPos != boardSize[thisServer] && connetctArray.findIndex(Array.isMatch([thisCheckLeftPos + 1, thisCheckTopPos])) == -1) { deleteBool = false; break; }
                 if (thisCheckTopPos != 1 && connetctArray.findIndex(Array.isMatch([thisCheckLeftPos, thisCheckTopPos - 1])) == -1) { deleteBool = false; break; }
-                if (thisCheckTopPos != boardSize && connetctArray.findIndex(Array.isMatch([thisCheckLeftPos, thisCheckTopPos + 1])) == -1) { deleteBool = false; break; }
+                if (thisCheckTopPos != boardSize[thisServer] && connetctArray.findIndex(Array.isMatch([thisCheckLeftPos, thisCheckTopPos + 1])) == -1) { deleteBool = false; break; }
             }
             if (deleteBool) {
                 deleteArray = deleteArray.concat(alreadyChackArray);
@@ -159,102 +159,121 @@ function StoneTrash(left, top, check) {
         return Array.from(new Set(deleteArray));
     }
 }
-// ï½çŸ³ã‚’å–ã‚‹é–¢æ•°
+// `Î‚ğæ‚éŠÖ”
 
-// ç”»åƒåˆæˆé–¢æ•°ï½
+// ‰æ‘œ‡¬ŠÖ”`
 async function JoinStone() {
     let image;
     let nextPlayer;
-    if (boardSize == 9) image = sharp("I-Go_Bot/IGo_Board_9.png");
-    else if (boardSize == 13) image = sharp("I-Go_Bot/IGo_Board_13.png");
-    else if (boardSize == 19) image = sharp("I-Go_Bot/IGo_Board_19.png");
-    let connetctArray = blackStoneImageArray.concat(whiteStoneImageArray);
+    if (boardSize[thisServer] == 9) image = sharp("IGo_Board_9.png");
+    else if (boardSize[thisServer] == 13) image = sharp("IGo_Board_13.png");
+    else if (boardSize[thisServer] == 19) image = sharp("IGo_Board_19.png");
+    let connetctArray = blackStoneImageArray[thisServer].concat(whiteStoneImageArray[thisServer]);
+    console.log(connetctArray);
     await image.composite(connetctArray);
-    if (nowTurnBool) nextPlayer = playerBlack.user.toString();
-    else nextPlayer = playerWhite.user.toString();
-    turnNum++;
+    if (nowTurnBool[thisServer]) nextPlayer = playerBlack[thisServer].user.toString();
+    else nextPlayer = playerWhite[thisServer].user.toString();
+    turnNum[thisServer]++;
     thisChannel.bulkDelete(2);
     let file = new MessageAttachment(image);
     thisChannel.send({
         embeds: [{
-            title: "å¯¾å±€ä¸­",
-            description: turnNum + "æ‰‹ç›®",
+            title: "‘Î‹Ç’†",
+            description: turnNum[thisServer] + "è–Ú",
             image: {
                 url: "attachment://image"
             },
             fields: [
                 {
-                    name: "ã‚¢ã‚²ãƒãƒ",
-                    value: "é»’: " + blackAgehama + ",  ç™½: " + whiteAgehama
+                    name: "ƒAƒQƒnƒ}",
+                    value: "•: " + blackAgehama[thisServer] + ",  ”’: " + whiteAgehama[thisServer]
                 }, {
-                    name: "æ¬¡ã®æ‰‹ç•ªã¯",
+                    name: "Ÿ‚Ìè”Ô‚Í",
                     value: nextPlayer
                 }
             ]
         }],
         files: [file]
-    });
+    }).catch((error) => thisChannel.send("‚à‚¤ˆê“x‚â‚è’¼‚µ‚Ä‚­‚¾‚³‚¢"));
+
 }
-// ï½ç”»åƒåˆæˆé–¢æ•°
+// `‰æ‘œ‡¬ŠÖ”
 
 const FirstPut_19 = [/*1*/[[4, 16]], /*2*/[[4, 16], [16, 4]], /*3*/[[4, 16], [16, 4], [16, 16]], /*4*/[[4, 16], [16, 4], [16, 16], [4, 4]],
     /*5*/[[4, 16], [16, 4], [16, 16], [4, 4], [10, 10]], /*6*/[[4, 16], [16, 4], [16, 16], [4, 4], [16, 10], [4, 10]], /*7*/[[4, 16], [16, 4], [16, 16], [4, 4], [10, 16], [10, 4], [10, 10]],
     /*8*/[[4, 16], [16, 4], [16, 16], [4, 4], [10, 16], [10, 4], [4, 10], [16, 10]], /*9*/[[4, 16], [16, 4], [16, 16], [4, 4], [10, 16], [10, 4], [4, 10], [16, 10], [10, 10]]];
 const FirstPut_13 = [/*1*/[[4, 10]], /*2*/[[4, 10], [10, 4]], /*3*/[[4, 10], [10, 4], [10, 10]], /*4*/[[4, 10], [10, 4], [10, 10], [4, 4]]];
 
-let boardSize; // ç›¤ã®å¤§ãã•(9,13,19)
-let nowPlayingBool = false; //ä»Šãƒ—ãƒ¬ã‚¤ä¸­ã‹ã©ã†ã‹
-let nowTurnBool = false; //ä»Šã®æ‰‹ç•ªã€€false => é»’ã€true => ç™½
-let playerBlack = null, playerWhite = null; //å¯¾æˆ¦ã—ã¦ã„ã‚‹ãƒ¦ãƒ¼ã‚¶ãƒ¼
-let blackAgehama = 0; //é»’ã®ã‚¢ã‚²ãƒãƒã®å€‹æ•°
-let whiteAgehama = 0; //ç™½ã®ã‚¢ã‚²ãƒãƒã®å€‹æ•°
-let blackStoneImageArray = []; //é»’çŸ³ã®ä½ç½®ã®é…åˆ—
-let whiteStoneImageArray = []; //ç™½çŸ³ã®ä½ç½®ã®é…åˆ—
-let blackStoneArray = []; //é»’çŸ³ã®ç”»åƒåˆæˆç”¨ã®é…åˆ—
-let whiteStoneArray = []; //ç™½çŸ³ã®ç”»åƒåˆæˆç”¨ã®é…åˆ—
+let server = [];
+let thisServer;
+let boardSize = []; // ”Õ‚Ì‘å‚«‚³(9,13,19)
+let nowPlayingBool = []; //¡ƒvƒŒƒC’†‚©‚Ç‚¤‚©
+let nowTurnBool = []; //¡‚Ìè”Ô@false => •Atrue => ”’
+let playerBlack = [], playerWhite = []; //‘Îí‚µ‚Ä‚¢‚éƒ†[ƒU[
+let blackAgehama = []; //•‚ÌƒAƒQƒnƒ}‚ÌŒÂ”
+let whiteAgehama = []; //”’‚ÌƒAƒQƒnƒ}‚ÌŒÂ”
+let blackStoneImageArray = []; //•Î‚ÌˆÊ’u‚Ì”z—ñ
+let whiteStoneImageArray = []; //”’Î‚ÌˆÊ’u‚Ì”z—ñ
+let blackStoneArray = []; //•Î‚Ì‰æ‘œ‡¬—p‚Ì”z—ñ
+let whiteStoneArray = []; //”’Î‚Ì‰æ‘œ‡¬—p‚Ì”z—ñ
 let thisChannel;
-let turnNum;
+let turnNum = [];
 
 client.on('ready', () => {
     console.log(`LogInAs${client.user.tag}`);
 })
 
-client.on('messageCreate', async msg => { //ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å–å¾—
+client.on('messageCreate', async msg => { //ƒƒbƒZ[ƒW‚Ìæ“¾
     if (msg.channel.name != "bot") { console.log("ret"); return; }
-    if (msg.author.bot) return; // bot ã®ç™ºè¨€ã¯ç„¡è¦–
+    if (server.indexOf(msg.guild.id) == -1) {
+        server.push(msg.guild.id);
+        boardSize.push(0);
+        nowPlayingBool.push(false);
+        nowTurnBool.push(false);
+        blackAgehama.push(0);
+        whiteAgehama.push(0);
+        blackStoneImageArray.push([]);
+        blackStoneArray.push([]);
+        whiteStoneImageArray.push([]);
+        whiteStoneArray.push([]);
+        turnNum.push(0);
+    }
+    thisServer = server.indexOf(msg.guild.id);
+    console.log(thisServer);
+    if (msg.author.bot) return; // bot ‚Ì”­Œ¾‚Í–³‹
     let text = msg.content;
 
     if (!msg.mentions.users.has(client.user.id)) {
         await msg.delete();
         return;
-    } //ãƒ¡ãƒ³ã‚·ãƒ§ãƒ³ã•ã‚Œãªã‘ã‚Œã°çµ‚äº†
+    } //ƒƒ“ƒVƒ‡ƒ“‚³‚ê‚È‚¯‚ê‚ÎI—¹
 
-    //ãƒ¡ãƒ³ã‚·ãƒ§ãƒ³éƒ¨åˆ†ã‚’é™¤ã
+    //ƒƒ“ƒVƒ‡ƒ“•”•ª‚ğœ‚­
     if (text[0] === '<') text = text.split(" ").join("").split(">")[1];
     else if (text[text.length - 1] === '>') text = text.split(" ").join("").split("<")[0];
 
-    let board; //ç›¤ã®ç”»åƒ
+    let board; //”Õ‚Ì‰æ‘œ
     thisChannel = msg.channel;
     await msg.delete();
 
-    //æ‰‹ç•ªã®è¨­å®š
-    if (!nowPlayingBool) {
+    //è”Ô‚Ìİ’è
+    if (!nowPlayingBool[thisServer]) {
         if (text === "black" || text === "Black") {
             //if (playerWhite == msg.author) playerWhite = "";
-            playerBlack = msg.member; //ç™ºè¨€ã—ãŸãƒ¦ãƒ¼ã‚¶ãƒ¼ã‚’é»’ç•ªã«è¨­å®š
+            playerBlack[thisServer] = msg.member; //”­Œ¾‚µ‚½ƒ†[ƒU[‚ğ•”Ô‚Éİ’è
             let blackName;
             let whiteName;
-            if (playerBlack == null) blackName = "";
-            else blackName = playerBlack.displayName;
-            if (playerWhite == null) whiteName = "";
-            else whiteName = playerWhite.displayName;
+            if (playerBlack[thisServer] == null) blackName = "";
+            else blackName = playerBlack[thisServer].displayName;
+            if (playerWhite[thisServer] == null) whiteName = "";
+            else whiteName = playerWhite[thisServer].displayName;
             thisChannel.bulkDelete(1);
             thisChannel.send({
                 embeds: [{
                     fields: [
                         {
-                            name: "å¾…æ©Ÿä¸­",
-                            value: "é»’: " + blackName + ",   ç™½: " + whiteName
+                            name: "‘Ò‹@’†",
+                            value: "•: " + blackName + ",   ”’: " + whiteName
                         }
                     ]
                 }],
@@ -262,20 +281,20 @@ client.on('messageCreate', async msg => { //ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å–å¾—
         }
         else if (text === "white" || text === "White") {
             //if (playerBlack == msg.author) playerBlack = "";
-            playerWhite = msg.member; //ç™ºè¨€ã—ãŸãƒ¦ãƒ¼ã‚¶ãƒ¼ã‚’ç™½ç•ªã«è¨­å®š
+            playerWhite[thisServer] = msg.member; //”­Œ¾‚µ‚½ƒ†[ƒU[‚ğ”’”Ô‚Éİ’è
             let blackName;
             let whiteName;
-            if (playerBlack == null) blackName = "";
-            else blackName = playerBlack.displayName;
-            if (playerWhite == null) whiteName = "";
-            else whiteName = playerWhite.displayName;
+            if (playerBlack[thisServer] == null) blackName = "";
+            else blackName = playerBlack[thisServer].displayName;
+            if (playerWhite[thisServer] == null) whiteName = "";
+            else whiteName = playerWhite[thisServer].displayName;
             thisChannel.bulkDelete(1);
             thisChannel.send({
                 embeds: [{
                     fields: [
                         {
-                            name: "å¾…æ©Ÿä¸­",
-                            value: "é»’: " + blackName + ",   ç™½: " + whiteName
+                            name: "‘Ò‹@’†",
+                            value: "•: " + blackName + ",   ”’: " + whiteName
                         }
                     ]
                 }],
@@ -283,29 +302,29 @@ client.on('messageCreate', async msg => { //ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å–å¾—
         }
 
     }
-    //æ‰‹ç•ªã®è¨­å®š
+    //è”Ô‚Ìİ’è
 
 
     let boardPlace = text.split('-');
     if (boardPlace[0] != null && boardPlace[1] != null && stringNumberBool(boardPlace[0]) && stringNumberBool(boardPlace[1]) && nowPlayingBool) {
 
-        //é¸æŠã•ã‚ŒãŸå ´æ‰€ã«æ—¢ã«çŸ³ãŒç½®ã‹ã‚Œã¦ã„ãŸã‚‰è­¦å‘Šã ã‘ã™ã‚‹
-        if (blackStoneArray.some(function (value) {
+        //‘I‘ğ‚³‚ê‚½êŠ‚ÉŠù‚ÉÎ‚ª’u‚©‚ê‚Ä‚¢‚½‚çŒx‚¾‚¯‚·‚é
+        if (blackStoneArray[thisServer].some(function (value) {
             return value[0] === Number(boardPlace[0]) && value[1] === Number(boardPlace[1]);
-        }) || whiteStoneArray.some(function (value) {
+        }) || whiteStoneArray[thisServer].some(function (value) {
             return value[0] === Number(boardPlace[0]) && value[1] === Number(boardPlace[1]);
         })) {
-            const reply = await thisChannel.send("é¸æŠã•ã‚ŒãŸå ´æ‰€ã«ã¯æ—¢ã«çŸ³ãŒã‚ã‚Šã¾ã™ã€‚åˆ¥ã®å ´æ‰€ã‚’æŒ‡å®šã—ã¦ãã ã•ã„");
+            const reply = await thisChannel.send("‘I‘ğ‚³‚ê‚½êŠ‚É‚ÍŠù‚ÉÎ‚ª‚ ‚è‚Ü‚·B•Ê‚ÌêŠ‚ğw’è‚µ‚Ä‚­‚¾‚³‚¢");
             await setTimeout(2500);
             await reply.delete();
             return;
         }
 
-        let keepBlackStone = Array.from(blackStoneArray);
-        let keepWhiteStone = Array.from(whiteStoneArray);
+        let keepBlackStone = Array.from(blackStoneArray[thisServer]);
+        let keepWhiteStone = Array.from(whiteStoneArray[thisServer]);
 
-        if (nowTurnBool) whiteStoneArray.push([Number(boardPlace[0]), Number(boardPlace[1])]);
-        else blackStoneArray.push([Number(boardPlace[0]), Number(boardPlace[1])]);
+        if (nowTurnBool[thisServer]) whiteStoneArray[thisServer].push([Number(boardPlace[0]), Number(boardPlace[1])]);
+        else blackStoneArray[thisServer].push([Number(boardPlace[0]), Number(boardPlace[1])]);
 
         console.log("debug1");
 
@@ -314,27 +333,27 @@ client.on('messageCreate', async msg => { //ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å–å¾—
             return first - second;
         });
         console.log("debug  " + delArray);
-        if (nowTurnBool) {
+        if (nowTurnBool[thisServer]) {
             for (num = delArray.length - 1; num >= 0; num--) {
-                await blackStoneArray.splice(delArray[num], 1);
+                await blackStoneArray[thisServer].splice(delArray[num], 1);
             }
         }
         else {
             for (num = delArray.length - 1; num >= 0; num--) {
-                await whiteStoneArray.splice(delArray[num], 1);
+                await whiteStoneArray[thisServer].splice(delArray[num], 1);
             }
         }
 
         if (delArray.length == 0) {
             let checkArray = StoneTrash(Number(boardPlace[0]), Number(boardPlace[1]), true);
             if (checkArray.length != 0) {
-                console.log("ç€æ‰‹ç¦æ­¢ç‚¹");
+                console.log("’…è‹Ö~“_");
                 console.log(keepBlackStone);
-                console.log(blackStoneArray);
-                blackStoneArray = keepBlackStone;
-                whiteStoneArray = keepWhiteStone;
-                console.log(blackStoneArray);
-                const reply = await thisChannel.send("ç€æ‰‹ç¦æ­¢ç‚¹ã§ã™");
+                console.log(blackStoneArray[thisServer]);
+                blackStoneArray[thisServer] = keepBlackStone;
+                whiteStoneArray[thisServer] = keepWhiteStone;
+                console.log(blackStoneArray[thisServer]);
+                const reply = await thisChannel.send("’…è‹Ö~“_‚Å‚·");
                 await setTimeout(2500);
                 await reply.delete();
                 return;
@@ -343,41 +362,40 @@ client.on('messageCreate', async msg => { //ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å–å¾—
 
         if (nowTurnBool) {
             console.log("whiteAgehama" + delArray.length);
-            whiteAgehama += delArray.length;
+            whiteAgehama[thisServer] += delArray.length;
             for (num = delArray.length - 1; num >= 0; num--) {
-                await blackStoneImageArray.splice(delArray[num], 1);
+                await blackStoneImageArray[thisServer].splice(delArray[num], 1);
             }
         }
         else {
             console.log("whiteAgehama" + delArray.length);
-            blackAgehama += delArray.length;
+            blackAgehama[thisServer] += delArray.length;
             for (num = delArray.length - 1; num >= 0; num--) {
-                await whiteStoneImageArray.splice(delArray[num], 1);
+                await whiteStoneImageArray[thisServer].splice(delArray[num], 1);
             }
         }
 
-        console.log("black: " + blackAgehama + "    white: " + whiteAgehama);
 
-        if (nowTurnBool) {
-            if (boardSize == 9) {
-                whiteStoneImageArray.push({
-                    input: "I-Go_Bot/WhiteStone_9.png",
+        if (nowTurnBool[thisServer]) {
+            if (boardSize[thisServer] == 9) {
+                whiteStoneImageArray[thisServer].push({
+                    input: "WhiteStone_9.png",
                     blend: "over",
                     top: Number(boardPlace[1]) * 88 - 38,
                     left: Number(boardPlace[0]) * 88 - 38
                 });
             }
-            else if (boardSize == 13) {
-                whiteStoneImageArray.push({
-                    input: "I-Go_Bot/WhiteStone_13.png",
+            else if (boardSize[thisServer] == 13) {
+                whiteStoneImageArray[thisServer].push({
+                    input: "WhiteStone_13.png",
                     blend: "over",
                     top: Number(boardPlace[1]) * 61 - 27,
                     left: Number(boardPlace[0]) * 61 - 27
                 });
             }
-            else if (boardSize == 19) {
-                whiteStoneImageArray.push({
-                    input: "I-Go_Bot/WhiteStone.png",
+            else if (boardSize[thisServer] == 19) {
+                whiteStoneImageArray[thisServer].push({
+                    input: "WhiteStone.png",
                     blend: "over",
                     top: Number(boardPlace[1]) * 44 + 25,
                     left: Number(boardPlace[0]) * 44 + 25
@@ -385,25 +403,25 @@ client.on('messageCreate', async msg => { //ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å–å¾—
             }
         }
         else {
-            if (boardSize == 9) {
-                blackStoneImageArray.push({
-                    input: "I-Go_Bot/BlackStone_9.png",
+            if (boardSize[thisServer] == 9) {
+                blackStoneImageArray[thisServer].push({
+                    input: "BlackStone_9.png",
                     blend: "over",
                     top: Number(boardPlace[1]) * 88 - 38,
                     left: Number(boardPlace[0]) * 88 - 38
                 });
             }
-            else if (boardSize == 13) {
-                blackStoneImageArray.push({
-                    input: "I-Go_Bot/BlackStone_13.png",
+            else if (boardSize[thisServer] == 13) {
+                blackStoneImageArray[thisServer].push({
+                    input: "BlackStone_13.png",
                     blend: "over",
                     top: Number(boardPlace[1]) * 61 - 27,
                     left: Number(boardPlace[0]) * 61 - 27
                 });
             }
-            else if (boardSize == 19) {
-                blackStoneImageArray.push({
-                    input: "I-Go_Bot/BlackStone.png",
+            else if (boardSize[thisServer] == 19) {
+                blackStoneImageArray[thisServer].push({
+                    input: "BlackStone.png",
                     blend: "over",
                     top: Number(boardPlace[1]) * 44 + 25,
                     left: Number(boardPlace[0]) * 44 + 25
@@ -411,21 +429,18 @@ client.on('messageCreate', async msg => { //ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å–å¾—
             }
         }
 
-        if (boardSize === 9) board = sharp("I-Go_Bot/IGo_Board_9.png");
-        else if (boardSize === 13) board = sharp("I-Go_Bot/IGo_Board_13.png");
-        else if (boardSize === 19) board = sharp("I-Go_Bot/IGo_Board_19.png");
         await JoinStone();
 
-        nowTurnBool = !nowTurnBool;
+        nowTurnBool[thisServer] = !nowTurnBool[thisServer];
     }
 
 
 
-    //å¯¾å±€é–‹å§‹
+    //‘Î‹ÇŠJn
     let startText = text.split(',');
     if ((startText[0] === "start" || startText[0] === "Start")) {
         if (startText.length <= 1) {
-            const reply = await thisChannel.send("å¯¾å±€ã‚’å§‹ã‚ã‚‹ã«ã¯```@I-Go_Bot start,ç›¤ã®å¤§ãã•(,ç½®ãçŸ³ã®æ•°)```ã¨å…¥åŠ›ã—ã¦ãã ã•ã„");
+            const reply = await thisChannel.send("‘Î‹Ç‚ğn‚ß‚é‚É‚Í```@I-Go_Bot start,”Õ‚Ì‘å‚«‚³(,’u‚«Î‚Ì”)```‚Æ“ü—Í‚µ‚Ä‚­‚¾‚³‚¢");
             await setTimeout(2500);
             await reply.delete();
             return;
@@ -433,149 +448,155 @@ client.on('messageCreate', async msg => { //ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å–å¾—
         if (startText.length == 2) startText.push("0");
 
         if (!stringNumberBool(startText[1]) || !stringNumberBool(startText[2])) {
-            const reply = await thisChannel.send("å¯¾å±€ã‚’å§‹ã‚ã‚‹ã«ã¯```@I-Go_Bot start,ç›¤ã®å¤§ãã•(,ç½®ãçŸ³ã®æ•°)```ã¨å…¥åŠ›ã—ã¦ãã ã•ã„");
+            const reply = await thisChannel.send("‘Î‹Ç‚ğn‚ß‚é‚É‚Í```@I-Go_Bot start,”Õ‚Ì‘å‚«‚³(,’u‚«Î‚Ì”)```‚Æ“ü—Í‚µ‚Ä‚­‚¾‚³‚¢");
             await setTimeout(2500);
             await reply.delete();
             return;
         }
 
-        if (playerBlack !== null && playerWhite !== null) {
-            boardSize = Number(startText[1]);
+        if (playerBlack[thisServer] !== null && playerWhite[thisServer] !== null) {
+            boardSize[thisServer] = Number(startText[1]);
             console.log("start");
-            if (startText[2] > 1) nowTurnBool = true;
-            else nowTurnBool = false;
+            if (startText[2] > 1) nowTurnBool[thisServer] = true;
+            else nowTurnBool[thisServer] = false;
 
             if (startText[2] == 1) startText[2] = 0;
 
             var debugCount = 0;
-            if (boardSize == 9) {
-                board = sharp("I-Go_Bot/IGo_Board_9.png");
+            if (boardSize[thisServer] == 9) {
+                board = sharp("IGo_Board_9.png");
             }
-            else if (boardSize == 13) {
-                board = sharp("I-Go_Bot/IGo_Board_13.png");
+            else if (boardSize[thisServer] == 13) {
+                board = sharp("IGo_Board_13.png");
                 if (startText[2] > 4 || startText[2] < 0) {
-                    const reply = await thisChannel.send("ç½®ãçŸ³ã®æ•°ãŒæ­£ã—ãã‚ã‚Šã¾ã›ã‚“");
+                    const reply = await thisChannel.send("’u‚«Î‚Ì”‚ª³‚µ‚­‚ ‚è‚Ü‚¹‚ñ");
                     await setTimeout(2500);
                     await reply.delete();
                     return;
                 }
                 else if (startText[2] != 0) {
                     for (var num = 0; num < startText[2]; num++) {
-                        blackStoneArray.push(FirstPut_13[startText[2] - 1][num]);
-                        blackStoneImageArray.push({
-                            input: "I-Go_Bot/BlackStone_13.png",
+                        blackStoneArray[thisServer].push(FirstPut_13[startText[2] - 1][num]);
+                        blackStoneImageArray[thisServer].push({
+                            input: "BlackStone_13.png",
                             blend: "over",
                             left: FirstPut_13[startText[2] - 1][num][0] * 61 - 27,
                             top: FirstPut_13[startText[2] - 1][num][1] * 61 - 27
                         });
                     }
-                    await board.composite(blackStoneImageArray);
+                    await board.composite(blackStoneImageArray[thisServer]);
                 }
             }
-            else if (boardSize == 19) {
-                board = sharp("I-Go_Bot/IGo_Board_19.png");
+            else if (boardSize[thisServer] == 19) {
+                board = sharp("IGo_Board_19.png");
                 if (startText[2] > 9 || startText[2] < 0) {
-                    const reply = await thisChannel.send("ç½®ãçŸ³ã®æ•°ãŒæ­£ã—ãã‚ã‚Šã¾ã›ã‚“");
+                    const reply = await thisChannel.send("’u‚«Î‚Ì”‚ª³‚µ‚­‚ ‚è‚Ü‚¹‚ñ");
                     await setTimeout(2500);
                     await reply.delete();
                     return;
                 }
                 else if (startText[2] != 0) {
                     for (var num = 0; num < startText[2]; num++) {
-                        blackStoneArray.push(FirstPut_19[startText[2] - 1][num]);
-                        blackStoneImageArray.push({
-                            input: "I-Go_Bot/BlackStone.png",
+                        blackStoneArray[thisServer].push(FirstPut_19[startText[2] - 1][num]);
+                        blackStoneImageArray[thisServer].push({
+                            input: "BlackStone.png",
                             blend: "over",
                             left: FirstPut_19[startText[2] - 1][num][0] * 44 + 25,
                             top: FirstPut_19[startText[2] - 1][num][1] * 44 + 25
                         });
                     }
-                    await board.composite(blackStoneImageArray);
+                    await board.composite(blackStoneImageArray[thisServer]);
                 }
             }
             else {
-                const reply = await thisChannel.send("ç•ªã®å¤§ãã•ã«ã¯ 9, 13, 19 ãŒæŒ‡å®šã§ãã¾ã™");
+                const reply = await thisChannel.send("”Ô‚Ì‘å‚«‚³‚É‚Í 9, 13, 19 ‚ªw’è‚Å‚«‚Ü‚·");
                 await setTimeout(2500);
                 await reply.delete();
                 return;
             }
             await thisChannel.bulkDelete(5);
+            let nextPlayer;
+            if (nowTurnBool[thisServer]) nextPlayer = playerBlack[thisServer].user.toString();
+            else nextPlayer = playerWhite[thisServer].user.toString();
             //thisChannel.send({ files: [board] });
             let file = new MessageAttachment(board);
             await thisChannel.send({
                 embeds: [{
-                    title: "å¯¾å±€ä¸­",
-                    description: "0æ‰‹ç›®",
+                    title: "‘Î‹Ç’†",
+                    description: "0è–Ú",
                     image: {
                         url: "attachment://board"
                     },
                     fields: [
                         {
-                            name: "ã‚¢ã‚²ãƒãƒ",
-                            value: "é»’: " + blackAgehama + ",  ç™½: " + whiteAgehama
+                            name: "ƒAƒQƒnƒ}",
+                            value: "•: " + blackAgehama[thisServer] + ",  ”’: " + whiteAgehama[thisServer]
+                        }, {
+                            name: "Ÿ‚Ìè”Ô‚Í",
+                            value: nextPlayer
                         }
                     ]
                 }],
                 files: [file]
-            });
+            }).catch((error) => thisChannel.send("‚à‚¤ˆê“x‚â‚è’¼‚µ‚Ä‚­‚¾‚³‚¢"));
 
-            nowPlayingBool = true;
-            turnNum = 0;
+            nowPlayingBool[thisServer] = true;
+            turnNum[thisServer] = 0;
         }
         else {
-            const reply = await thisChannel.send("ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒæƒã£ã¦ã„ã¾ã›ã‚“");
+            const reply = await thisChannel.send("ƒvƒŒƒCƒ„[‚ª‘µ‚Á‚Ä‚¢‚Ü‚¹‚ñ");
             await setTimeout(2500);
             await reply.delete();
         }
     }
-    //å¯¾å±€é–‹å§‹
+    //‘Î‹ÇŠJn
 
-    //å¯¾å±€çµ‚äº†
+    //‘Î‹ÇI—¹
     if (text === "finish" || text === "Finish") {
         let beforeMessage = await thisChannel.messages.fetch({ before: msg.id, limit: 1 })
             .then(messages => messages.first())
             .catch(console.error);
         beforeMessage.edit({
             embeds: [{
-                title: "å¯¾å±€çµ‚äº†",
-                description: "0æ‰‹ç›®",
+                title: "‘Î‹ÇI—¹",
+                description: "0è–Ú",
                 image: {
                     url: "attachment://board"
                 },
                 fields: [
                     {
-                        name: "ã‚¢ã‚²ãƒãƒ",
-                        value: "é»’: " + blackAgehama + ",  ç™½: " + whiteAgehama
+                        name: "ƒAƒQƒnƒ}",
+                        value: "•: " + blackAgehama[thisServer] + ",  ”’: " + whiteAgehama[thisServer]
                     }
                 ]
             }]
         });
-        nowPlayingBool = false;
-        nowTurnBool = false;
-        playerBlack = null;
-        playerWhite = null;
-        blackAgehama = 0;
-        whiteAgehama = 0;
-        blackStoneImageArray.length = 0;
-        whiteStoneImageArray.length = 0;
-        blackStoneArray.length = 0;
-        whiteStoneArray.length = 0;
+        nowPlayingBool[thisServer] = false;
+        nowTurnBool[thisServer] = false;
+        playerBlack[thisServer] = null;
+        playerWhite[thisServer] = null;
+        blackAgehama[thisServer] = 0;
+        whiteAgehama[thisServer] = 0;
+        blackStoneImageArray[thisServer].length = 0;
+        whiteStoneImageArray[thisServer].length = 0;
+        blackStoneArray[thisServer].length = 0;
+        whiteStoneArray[thisServer].length = 0;
         board = null;
         thisChannel.send({
             embeds: [{
                 fields: [
                     {
-                        name: "å¾…æ©Ÿä¸­",
-                        value: "èª°ã‚‚ã„ãªã„"
+                        name: "‘Ò‹@’†",
+                        value: "’N‚à‚¢‚È‚¢"
                     }
                 ]
             }],
         });
     }
-    //å¯¾å±€çµ‚äº†
+    //‘Î‹ÇI—¹
 
-    // ãƒ€ã‚¤ã‚¹ãƒ­ãƒ¼ãƒ«
-    let dicePlace = text.split('D');   // ï¼ ãƒ¡ãƒ³ã‚·ãƒ§ãƒ³ a D b => aDb ã®ãƒ€ã‚¤ã‚¹ãƒ­ãƒ¼ãƒ«
+    // ƒ_ƒCƒXƒ[ƒ‹
+    let dicePlace = text.split('D');   // —ƒƒ“ƒVƒ‡ƒ“ a D b => aDb ‚Ìƒ_ƒCƒXƒ[ƒ‹
     if (dicePlace[0] != null && dicePlace[1] != null && stringNumberBool(dicePlace[0]) && stringNumberBool(dicePlace[1])) {
 
         var returnNum = 0;
@@ -585,51 +606,53 @@ client.on('messageCreate', async msg => { //ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å–å¾—
         thisChannel.send("" + returnNum);
 
     }
-    // ãƒ€ã‚¤ã‚¹ãƒ­ãƒ¼ãƒ«
+    // ƒ_ƒCƒXƒ[ƒ‹
 
-    ////ãƒãƒ£ãƒ³ãƒãƒ«ä½œæˆ
+    ////ƒ`ƒƒƒ“ƒlƒ‹ì¬
     //let makeText = text.split(',');
     //if (makeText[0] == "makeChannel") {
     //    msg.channel.parent.clone().then(cat => {
-    //        msg.guild.channels.create('å¯¾å±€', {
+    //        msg.guild.channels.create('‘Î‹Ç', {
     //            type: 'text',
     //            parent: cat.id
     //        })
     //    })
     //}
-    ////ãƒãƒ£ãƒ³ãƒãƒ«ä½œæˆ
+    ////ƒ`ƒƒƒ“ƒlƒ‹ì¬
 
-    //æœ€åˆã®å‡¦ç†
+    //Å‰‚Ìˆ—
     if (text == "firstRun") {
         await thisChannel.send({
             embeds: [{
                 fields: [
                     {
-                        name: "å¾…æ©Ÿä¸­",
-                        value: "é»’: ,   ç™½: "
+                        name: "‘Ò‹@’†",
+                        value: "•: ,   ”’: "
                     }
                 ]
             }],
         });
     }
-    //æœ€åˆã®å‡¦ç†
+    //Å‰‚Ìˆ—
 });
 
-client.login('ODk2NDI1MjIyODAxMDg0NTA2.YWG7Cw.c1FUc9tNF1BRlsG6cL0gAUYa_h0');
+client.login('ODk2NDI1MjIyODAxMDg0NTA2.YWG7Cw.SMpLnoRknXU4ezJlnNZi4MCrn5s');
 //ODk2NDI1MjIyODAxMDg0NTA2.YWG7Cw.fVYjQc9msXYuQiroX8GMCQFUrhM
 //ODk2NDI1MjIyODAxMDg0NTA2.YWG7Cw.Cv_xMP8kmM3_0B8HnQYi1QFh-eA
 //ODk2NDI1MjIyODAxMDg0NTA2.YWG7Cw.7dORqTnhCcDx_EiwOECr7mlLQVU
 //ODk2NDI1MjIyODAxMDg0NTA2.YWG7Cw.n_I9Pymd6kR7V-y0PwOxyK-Pvk0
 //ODk2NDI1MjIyODAxMDg0NTA2.YWG7Cw.c1FUc9tNF1BRlsG6cL0gAUYa_h0
 //ODk2NDI1MjIyODAxMDg0NTA2.YWG7Cw.c1FUc9tNF1BRlsG6cL0gAUYa_h0
-////ã§ãã‚‹ã“ã¨
+//ODk2NDI1MjIyODAxMDg0NTA2.YWG7Cw.SMpLnoRknXU4ezJlnNZi4MCrn5s
+//ODk2NDI1MjIyODAxMDg0NTA2.YWG7Cw.SMpLnoRknXU4ezJlnNZi4MCrn5s
+////‚Å‚«‚é‚±‚Æ
 //
-// ï¼ ãƒ¡ãƒ³ã‚·ãƒ§ãƒ³ Brack     ==> ç™ºè¨€è€…ã‚’é»’ç•ªã«è¨­å®š (å¯¾å±€ä¸­ä»¥å¤–)
-// ï¼ ãƒ¡ãƒ³ã‚·ãƒ§ãƒ³ White     ==> ç™ºè¨€è€…ã‚’ç™½ç•ªã«è¨­å®š (å¯¾å±€ä¸­ä»¥å¤–)
-// ï¼ ãƒ¡ãƒ³ã‚·ãƒ§ãƒ³ Start,num1,num2 ==> å¯¾å±€é–‹å§‹ (num1è·¯ç›¤,num2å­ã®ç½®ãçŸ³)
+// —ƒƒ“ƒVƒ‡ƒ“ Brack     ==> ”­Œ¾Ò‚ğ•”Ô‚Éİ’è (‘Î‹Ç’†ˆÈŠO)
+// —ƒƒ“ƒVƒ‡ƒ“ White     ==> ”­Œ¾Ò‚ğ”’”Ô‚Éİ’è (‘Î‹Ç’†ˆÈŠO)
+// —ƒƒ“ƒVƒ‡ƒ“ Start,num1,num2 ==> ‘Î‹ÇŠJn (num1˜H”Õ,num2q‚Ì’u‚«Î)
 //
-//  å¯¾å±€ä¸­
-//     ï¼ ãƒ¡ãƒ³ã‚·ãƒ§ãƒ³ num1-num2 ==> å·¦ã‹ã‚‰num1,ä¸Šã‹ã‚‰num2ã®ä½ç½®ã«çŸ³ã‚’ç½®ã
+//  ‘Î‹Ç’†
+//     —ƒƒ“ƒVƒ‡ƒ“ num1-num2 ==> ¶‚©‚çnum1,ã‚©‚çnum2‚ÌˆÊ’u‚ÉÎ‚ğ’u‚­
 //
-// ï¼ ãƒ¡ãƒ³ã‚·ãƒ§ãƒ³ Finish    ==> å¯¾å±€çµ‚äº† (å¼·åˆ¶)
-// ï¼ ãƒ¡ãƒ³ã‚·ãƒ§ãƒ³ aDb  ã€€   ==> aDb ã®ãƒ€ã‚¤ã‚¹ãƒ­ãƒ¼ãƒ«
+// —ƒƒ“ƒVƒ‡ƒ“ Finish    ==> ‘Î‹ÇI—¹ (‹­§)
+// —ƒƒ“ƒVƒ‡ƒ“ aDb  @   ==> aDb ‚Ìƒ_ƒCƒXƒ[ƒ‹
