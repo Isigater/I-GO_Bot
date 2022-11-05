@@ -220,6 +220,7 @@ let thisChannel;
 let turnNum = [];
 
 client.on('ready', () => {
+    console.log("hello,discord!");
     console.log(`LogInAs${client.user.tag}`);
 })
 
