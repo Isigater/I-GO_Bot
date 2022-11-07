@@ -637,7 +637,7 @@ client.on('messageCreate', async msg => { //メッセージの取得
     //最初の処理
 });
 
-client.login('ODk2NDI1MjIyODAxMDg0NTA2.YWG7Cw.SMpLnoRknXU4ezJlnNZi4MCrn5s');
+//client.login('ODk2NDI1MjIyODAxMDg0NTA2.YWG7Cw.SMpLnoRknXU4ezJlnNZi4MCrn5s');
 //ODk2NDI1MjIyODAxMDg0NTA2.YWG7Cw.fVYjQc9msXYuQiroX8GMCQFUrhM
 //ODk2NDI1MjIyODAxMDg0NTA2.YWG7Cw.Cv_xMP8kmM3_0B8HnQYi1QFh-eA
 //ODk2NDI1MjIyODAxMDg0NTA2.YWG7Cw.7dORqTnhCcDx_EiwOECr7mlLQVU
