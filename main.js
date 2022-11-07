@@ -28,34 +28,27 @@ function StoneTrash(left, top, check) {
     if (check) checkColor = !nowTurnBool[thisServer];
     else checkColor = nowTurnBool[thisServer];
 
-    console.log("debug2" + checkColor);
-
     if (checkColor) {
-        console.log("debug3");
         //つながっている黒の石を取得
         if (check) {
-            console.log(blackStoneArray[thisServer]);
-            console.log(left + ", " + top);
             startPointArray.push(blackStoneArray[thisServer].findIndex(Array.isMatch([left, top])));
         }
         else {
-            console.log(blackStoneArray[thisServer]);
             if (top != 1) startPointArray.push(blackStoneArray[thisServer].findIndex(Array.isMatch([left, top - 1])));
             if (top != boardSize[thisServer]) startPointArray.push(blackStoneArray[thisServer].findIndex(Array.isMatch([left, top + 1])));
             if (left != 1) startPointArray.push(blackStoneArray[thisServer].findIndex(Array.isMatch([left - 1, top])));
             if (left != boardSize[thisServer]) startPointArray.push(blackStoneArray[thisServer].findIndex(Array.isMatch([left + 1, top])));
         }
-        console.log(startPointArray);
         startPointArray = startPointArray.filter(pos => pos >= 0);
-        console.log(startPointArray);
 
         for (let startPos = 0; startPos < startPointArray.length; startPos++) {
             alreadyChackArray.length = 0;
             yetCheckArray.length = 0;
             yetCheckArray.push(startPointArray[startPos]);
+
             while (yetCheckArray.length != 0) {
+
                 for (let num = yetCheckArray.length - 1; num >= 0;) {
-                    console.log(num);
                     let topPos = blackStoneArray[thisServer][yetCheckArray[num]][1];
                     let leftPos = blackStoneArray[thisServer][yetCheckArray[num]][0];
                     alreadyChackArray.push(yetCheckArray[num]);
@@ -80,10 +73,10 @@ function StoneTrash(left, top, check) {
                     num = yetCheckArray.length - 1;
                 }
             }
-            console.log("debug4  " + alreadyChackArray);
 
             let deleteBool = true;
             let connetctArray = blackStoneArray[thisServer].concat(whiteStoneArray[thisServer]);
+
             for (let num = 0; num < alreadyChackArray.length; num++) {
                 let thisCheckTopPos = blackStoneArray[thisServer][alreadyChackArray[num]][1];
                 let thisCheckLeftPos = blackStoneArray[thisServer][alreadyChackArray[num]][0];
@@ -93,7 +86,6 @@ function StoneTrash(left, top, check) {
                 if (thisCheckTopPos != boardSize[thisServer] && connetctArray.findIndex(Array.isMatch([thisCheckLeftPos, thisCheckTopPos + 1])) == -1) { deleteBool = false; break; }
             }
             if (deleteBool) {
-                console.log(alreadyChackArray);
                 deleteArray = deleteArray.concat(alreadyChackArray);
             }
         }
@@ -169,7 +161,6 @@ async function JoinStone() {
     else if (boardSize[thisServer] == 13) image = sharp("IGo_Board_13.png");
     else if (boardSize[thisServer] == 19) image = sharp("IGo_Board_19.png");
     let connetctArray = blackStoneImageArray[thisServer].concat(whiteStoneImageArray[thisServer]);
-    console.log(connetctArray);
     await image.composite(connetctArray);
     if (nowTurnBool[thisServer]) nextPlayer = playerBlack[thisServer].user.toString();
     else nextPlayer = playerWhite[thisServer].user.toString();
@@ -240,7 +231,6 @@ client.on('messageCreate', async msg => { //メッセージの取得
         turnNum.push(0);
     }
     thisServer = server.indexOf(msg.guild.id);
-    console.log(thisServer);
     if (msg.author.bot) return; // bot の発言は無視
     let text = msg.content;
 
@@ -327,13 +317,15 @@ client.on('messageCreate', async msg => { //メッセージの取得
         if (nowTurnBool[thisServer]) whiteStoneArray[thisServer].push([Number(boardPlace[0]), Number(boardPlace[1])]);
         else blackStoneArray[thisServer].push([Number(boardPlace[0]), Number(boardPlace[1])]);
 
-        console.log("debug1");
-
-        let delArray = StoneTrash(Number(boardPlace[0]), Number(boardPlace[1]), false);
+        try {
+            let delArray = StoneTrash(Number(boardPlace[0]), Number(boardPlace[1]), false);
+        } catch (e) {
+            const reply = await thisChannel.send("エラーが発生しました");
+            console.log(e);
+        }
         delArray.sort(function (first, second) {
             return first - second;
         });
-        console.log("debug  " + delArray);
         if (nowTurnBool[thisServer]) {
             for (num = delArray.length - 1; num >= 0; num--) {
                 await blackStoneArray[thisServer].splice(delArray[num], 1);
@@ -346,14 +338,15 @@ client.on('messageCreate', async msg => { //メッセージの取得
         }
 
         if (delArray.length == 0) {
-            let checkArray = StoneTrash(Number(boardPlace[0]), Number(boardPlace[1]), true);
+            try {
+                let checkArray = StoneTrash(Number(boardPlace[0]), Number(boardPlace[1]), true);
+            } catch (e) {
+                const reply = await thisChannel.send("エラーが発生しました");
+                console.log(e);
+            }
             if (checkArray.length != 0) {
-                console.log("着手禁止点");
-                console.log(keepBlackStone);
-                console.log(blackStoneArray[thisServer]);
                 blackStoneArray[thisServer] = keepBlackStone;
                 whiteStoneArray[thisServer] = keepWhiteStone;
-                console.log(blackStoneArray[thisServer]);
                 const reply = await thisChannel.send("着手禁止点です");
                 await setTimeout(2500);
                 await reply.delete();
@@ -362,14 +355,12 @@ client.on('messageCreate', async msg => { //メッセージの取得
         }
 
         if (nowTurnBool) {
-            console.log("whiteAgehama" + delArray.length);
             whiteAgehama[thisServer] += delArray.length;
             for (num = delArray.length - 1; num >= 0; num--) {
                 await blackStoneImageArray[thisServer].splice(delArray[num], 1);
             }
         }
         else {
-            console.log("whiteAgehama" + delArray.length);
             blackAgehama[thisServer] += delArray.length;
             for (num = delArray.length - 1; num >= 0; num--) {
                 await whiteStoneImageArray[thisServer].splice(delArray[num], 1);
@@ -457,7 +448,6 @@ client.on('messageCreate', async msg => { //メッセージの取得
 
         if (playerBlack[thisServer] !== null && playerWhite[thisServer] !== null) {
             boardSize[thisServer] = Number(startText[1]);
-            console.log("start");
             if (startText[2] > 1) nowTurnBool[thisServer] = true;
             else nowTurnBool[thisServer] = false;
 
