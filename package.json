@@ -15,12 +15,12 @@
   "license": "MIT",
   "dependencies": {
     "deta": "^1.1.0",
-    "discord.js": "^13.3.1",
+    "discord.js": "^14.1.2",
     "module": "^1.2.5",
     "setTimeout": "^0.4.9",
     "sharp": "^0.30.0"
   },
   "engines": {
-    "node": "16.13.0"
+    "node": "18.4.0"
   }
 }
