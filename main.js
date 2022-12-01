@@ -172,7 +172,7 @@ async function JoinStone() {
             title: "対局中",
             description: turnNum[thisServer] + "手目",
             image: {
-                url: "attachment://image"
+                url: "attachment://image.extension"
             },
             fields: [
                 {
@@ -516,7 +516,7 @@ client.on('messageCreate', async msg => { //メッセージの取得
                     title: "対局中",
                     description: "0手目",
                     image: {
-                        url: "attachment://board"
+                        url: "attachment://board.extension"
                     },
                     fields: [
                         {
@@ -552,7 +552,7 @@ client.on('messageCreate', async msg => { //メッセージの取得
                 title: "対局終了",
                 description: "0手目",
                 image: {
-                    url: "attachment://board"
+                    url: "attachment://board.extension"
                 },
                 fields: [
                     {
