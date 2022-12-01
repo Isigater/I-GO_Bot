@@ -2,7 +2,7 @@
 import { createRequire } from "module";
 const require = createRequire(import.meta.url);
 const { setTimeout } = require('timers/promises');
-import { Client, GatewayIntentBits, Partials, MessageAttachment } from 'discord.js';
+import { Client, GatewayIntentBits, Partials, AttachmentBuilder } from 'discord.js';
 const client = new Client({ intents: [GatewayIntentBits.Guilds], partials: [Partials.Channel] });
 const sharp = require('sharp');
 
@@ -166,7 +166,7 @@ async function JoinStone() {
     else nextPlayer = playerWhite[thisServer].user.toString();
     turnNum[thisServer]++;
     thisChannel.bulkDelete(2);
-    let file = new MessageAttachment(image);
+    let file = new AttachmentBuilder(image);
     thisChannel.send({
         embeds: [{
             title: "対局中",
@@ -510,7 +510,7 @@ client.on('messageCreate', async msg => { //メッセージの取得
             if (nowTurnBool[thisServer]) nextPlayer = playerBlack[thisServer].user.toString();
             else nextPlayer = playerWhite[thisServer].user.toString();
             //thisChannel.send({ files: [board] });
-            let file = new MessageAttachment(board);
+            let file = new AttachmentBuilder(board);
             await thisChannel.send({
                 embeds: [{
                     title: "対局中",
