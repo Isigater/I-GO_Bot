@@ -23,5 +23,13 @@
   },
   "engines": {
     "node": "19.2.0"
+  },
+  "resolutions": {
+    "deta": "^1.1.0",
+    "discord.js": "^14.7.1",
+    "module": "^1.2.5",
+    "setTimeout": "^0.4.9",
+    "sharp": "^0.30.0",
+    "timers-promises":"^1.0.1"
   }
 }
