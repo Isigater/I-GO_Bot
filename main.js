@@ -1,12 +1,12 @@
 // These lines make "require" available
 import { createRequire } from "module";
 const require = createRequire(import.meta.url);
-const { setTimeout } = require('timers-promises');
+const { setTimeout } = require('timers/promises');
 import { Client, GatewayIntentBits, Partials, AttachmentBuilder } from 'discord.js';
 const client = new Client({ intents: [GatewayIntentBits.Guilds], partials: [Partials.Channel] });
 const sharp = require('sharp');
 
-const stringNumberBool = n => typeof n === "string" && n !== "" && !isNaN(n); // int ‰»‚Å‚«‚é‚©
+const stringNumberBool = n => typeof n === "string" && n !== "" && !isNaN(n); // int åŒ–ã§ãã‚‹ã‹
 
 Array.isMatch = function (x) {
     return function (y) {
@@ -18,7 +18,7 @@ Array.isMatch = function (x) {
     }
 }
 
-// Î‚ğæ‚éŠÖ”`
+// çŸ³ã‚’å–ã‚‹é–¢æ•°ï½
 function StoneTrash(left, top, check) {
     let startPointArray = new Array;
     let deleteArray = new Array;
@@ -29,7 +29,7 @@ function StoneTrash(left, top, check) {
     else checkColor = nowTurnBool[thisServer];
 
     if (checkColor) {
-        //‚Â‚È‚ª‚Á‚Ä‚¢‚é•‚ÌÎ‚ğæ“¾
+        //ã¤ãªãŒã£ã¦ã„ã‚‹é»’ã®çŸ³ã‚’å–å¾—
         if (check) {
             startPointArray.push(blackStoneArray[thisServer].findIndex(Array.isMatch([left, top])));
         }
@@ -92,7 +92,7 @@ function StoneTrash(left, top, check) {
         return Array.from(new Set(deleteArray));
     }
     else {
-        //‚Â‚È‚ª‚Á‚Ä‚¢‚é”’‚ÌÎ‚ğæ“¾
+        //ã¤ãªãŒã£ã¦ã„ã‚‹ç™½ã®çŸ³ã‚’å–å¾—
         if (check) {
             startPointArray.push(whiteStoneArray[thisServer].findIndex(Array.isMatch([left, top])));
         }
@@ -151,9 +151,9 @@ function StoneTrash(left, top, check) {
         return Array.from(new Set(deleteArray));
     }
 }
-// `Î‚ğæ‚éŠÖ”
+// ï½çŸ³ã‚’å–ã‚‹é–¢æ•°
 
-// ‰æ‘œ‡¬ŠÖ”`
+// ç”»åƒåˆæˆé–¢æ•°ï½
 async function JoinStone() {
     let image;
     let nextPlayer;
@@ -169,26 +169,26 @@ async function JoinStone() {
     let file = new AttachmentBuilder(image);
     thisChannel.send({
         embeds: [{
-            title: "‘Î‹Ç’†",
-            description: turnNum[thisServer] + "è–Ú",
+            title: "å¯¾å±€ä¸­",
+            description: turnNum[thisServer] + "æ‰‹ç›®",
             image: {
                 url: "attachment://image.extension"
             },
             fields: [
                 {
-                    name: "ƒAƒQƒnƒ}",
-                    value: "•: " + blackAgehama[thisServer] + ",  ”’: " + whiteAgehama[thisServer]
+                    name: "ã‚¢ã‚²ãƒãƒ",
+                    value: "é»’: " + blackAgehama[thisServer] + ",  ç™½: " + whiteAgehama[thisServer]
                 }, {
-                    name: "Ÿ‚Ìè”Ô‚Í",
+                    name: "æ¬¡ã®æ‰‹ç•ªã¯",
                     value: nextPlayer
                 }
             ]
         }],
         files: [file]
-    }).catch((error) => thisChannel.send("‚à‚¤ˆê“x‚â‚è’¼‚µ‚Ä‚­‚¾‚³‚¢"));
+    }).catch((error) => thisChannel.send("ã‚‚ã†ä¸€åº¦ã‚„ã‚Šç›´ã—ã¦ãã ã•ã„"));
 
 }
-// `‰æ‘œ‡¬ŠÖ”
+// ï½ç”»åƒåˆæˆé–¢æ•°
 
 const FirstPut_19 = [/*1*/[[4, 16]], /*2*/[[4, 16], [16, 4]], /*3*/[[4, 16], [16, 4], [16, 16]], /*4*/[[4, 16], [16, 4], [16, 16], [4, 4]],
     /*5*/[[4, 16], [16, 4], [16, 16], [4, 4], [10, 10]], /*6*/[[4, 16], [16, 4], [16, 16], [4, 4], [16, 10], [4, 10]], /*7*/[[4, 16], [16, 4], [16, 16], [4, 4], [10, 16], [10, 4], [10, 10]],
@@ -197,16 +197,16 @@ const FirstPut_13 = [/*1*/[[4, 10]], /*2*/[[4, 10], [10, 4]], /*3*/[[4, 10], [10
 
 let server = [];
 let thisServer;
-let boardSize = []; // ”Õ‚Ì‘å‚«‚³(9,13,19)
-let nowPlayingBool = []; //¡ƒvƒŒƒC’†‚©‚Ç‚¤‚©
-let nowTurnBool = []; //¡‚Ìè”Ô@false => •Atrue => ”’
-let playerBlack = [], playerWhite = []; //‘Îí‚µ‚Ä‚¢‚éƒ†[ƒU[
-let blackAgehama = []; //•‚ÌƒAƒQƒnƒ}‚ÌŒÂ”
-let whiteAgehama = []; //”’‚ÌƒAƒQƒnƒ}‚ÌŒÂ”
-let blackStoneImageArray = []; //•Î‚ÌˆÊ’u‚Ì”z—ñ
-let whiteStoneImageArray = []; //”’Î‚ÌˆÊ’u‚Ì”z—ñ
-let blackStoneArray = []; //•Î‚Ì‰æ‘œ‡¬—p‚Ì”z—ñ
-let whiteStoneArray = []; //”’Î‚Ì‰æ‘œ‡¬—p‚Ì”z—ñ
+let boardSize = []; // ç›¤ã®å¤§ãã•(9,13,19)
+let nowPlayingBool = []; //ä»Šãƒ—ãƒ¬ã‚¤ä¸­ã‹ã©ã†ã‹
+let nowTurnBool = []; //ä»Šã®æ‰‹ç•ªã€€false => é»’ã€true => ç™½
+let playerBlack = [], playerWhite = []; //å¯¾æˆ¦ã—ã¦ã„ã‚‹ãƒ¦ãƒ¼ã‚¶ãƒ¼
+let blackAgehama = []; //é»’ã®ã‚¢ã‚²ãƒãƒã®å€‹æ•°
+let whiteAgehama = []; //ç™½ã®ã‚¢ã‚²ãƒãƒã®å€‹æ•°
+let blackStoneImageArray = []; //é»’çŸ³ã®ä½ç½®ã®é…åˆ—
+let whiteStoneImageArray = []; //ç™½çŸ³ã®ä½ç½®ã®é…åˆ—
+let blackStoneArray = []; //é»’çŸ³ã®ç”»åƒåˆæˆç”¨ã®é…åˆ—
+let whiteStoneArray = []; //ç™½çŸ³ã®ç”»åƒåˆæˆç”¨ã®é…åˆ—
 let thisChannel;
 let turnNum = [];
 
@@ -215,7 +215,7 @@ client.on('ready', () => {
     console.log(`LogInAs${client.user.tag}`);
 })
 
-client.on('messageCreate', async msg => { //ƒƒbƒZ[ƒW‚Ìæ“¾
+client.on('messageCreate', async msg => { //ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å–å¾—
     if (msg.channel.name != "bot") { console.log("ret"); return; }
     if (server.indexOf(msg.guild.id) == -1) {
         server.push(msg.guild.id);
@@ -231,27 +231,27 @@ client.on('messageCreate', async msg => { //ƒƒbƒZ[ƒW‚Ìæ“¾
         turnNum.push(0);
     }
     thisServer = server.indexOf(msg.guild.id);
-    if (msg.author.bot) return; // bot ‚Ì”­Œ¾‚Í–³‹
+    if (msg.author.bot) return; // bot ã®ç™ºè¨€ã¯ç„¡è¦–
     let text = msg.content;
 
     if (!msg.mentions.users.has(client.user.id)) {
         await msg.delete();
         return;
-    } //ƒƒ“ƒVƒ‡ƒ“‚³‚ê‚È‚¯‚ê‚ÎI—¹
+    } //ãƒ¡ãƒ³ã‚·ãƒ§ãƒ³ã•ã‚Œãªã‘ã‚Œã°çµ‚äº†
 
-    //ƒƒ“ƒVƒ‡ƒ“•”•ª‚ğœ‚­
+    //ãƒ¡ãƒ³ã‚·ãƒ§ãƒ³éƒ¨åˆ†ã‚’é™¤ã
     if (text[0] === '<') text = text.split(" ").join("").split(">")[1];
     else if (text[text.length - 1] === '>') text = text.split(" ").join("").split("<")[0];
 
-    let board; //”Õ‚Ì‰æ‘œ
+    let board; //ç›¤ã®ç”»åƒ
     thisChannel = msg.channel;
     await msg.delete();
 
-    //è”Ô‚Ìİ’è
+    //æ‰‹ç•ªã®è¨­å®š
     if (!nowPlayingBool[thisServer]) {
         if (text === "black" || text === "Black") {
             //if (playerWhite == msg.author) playerWhite = "";
-            playerBlack[thisServer] = msg.member; //”­Œ¾‚µ‚½ƒ†[ƒU[‚ğ•”Ô‚Éİ’è
+            playerBlack[thisServer] = msg.member; //ç™ºè¨€ã—ãŸãƒ¦ãƒ¼ã‚¶ãƒ¼ã‚’é»’ç•ªã«è¨­å®š
             let blackName;
             let whiteName;
             if (playerBlack[thisServer] == null) blackName = "";
@@ -263,8 +263,8 @@ client.on('messageCreate', async msg => { //ƒƒbƒZ[ƒW‚Ìæ“¾
                 embeds: [{
                     fields: [
                         {
-                            name: "‘Ò‹@’†",
-                            value: "•: " + blackName + ",   ”’: " + whiteName
+                            name: "å¾…æ©Ÿä¸­",
+                            value: "é»’: " + blackName + ",   ç™½: " + whiteName
                         }
                     ]
                 }],
@@ -272,7 +272,7 @@ client.on('messageCreate', async msg => { //ƒƒbƒZ[ƒW‚Ìæ“¾
         }
         else if (text === "white" || text === "White") {
             //if (playerBlack == msg.author) playerBlack = "";
-            playerWhite[thisServer] = msg.member; //”­Œ¾‚µ‚½ƒ†[ƒU[‚ğ”’”Ô‚Éİ’è
+            playerWhite[thisServer] = msg.member; //ç™ºè¨€ã—ãŸãƒ¦ãƒ¼ã‚¶ãƒ¼ã‚’ç™½ç•ªã«è¨­å®š
             let blackName;
             let whiteName;
             if (playerBlack[thisServer] == null) blackName = "";
@@ -284,8 +284,8 @@ client.on('messageCreate', async msg => { //ƒƒbƒZ[ƒW‚Ìæ“¾
                 embeds: [{
                     fields: [
                         {
-                            name: "‘Ò‹@’†",
-                            value: "•: " + blackName + ",   ”’: " + whiteName
+                            name: "å¾…æ©Ÿä¸­",
+                            value: "é»’: " + blackName + ",   ç™½: " + whiteName
                         }
                     ]
                 }],
@@ -293,19 +293,19 @@ client.on('messageCreate', async msg => { //ƒƒbƒZ[ƒW‚Ìæ“¾
         }
 
     }
-    //è”Ô‚Ìİ’è
+    //æ‰‹ç•ªã®è¨­å®š
 
 
     let boardPlace = text.split('-');
     if (boardPlace[0] != null && boardPlace[1] != null && stringNumberBool(boardPlace[0]) && stringNumberBool(boardPlace[1]) && nowPlayingBool) {
 
-        //‘I‘ğ‚³‚ê‚½êŠ‚ÉŠù‚ÉÎ‚ª’u‚©‚ê‚Ä‚¢‚½‚çŒx‚¾‚¯‚·‚é
+        //é¸æŠã•ã‚ŒãŸå ´æ‰€ã«æ—¢ã«çŸ³ãŒç½®ã‹ã‚Œã¦ã„ãŸã‚‰è­¦å‘Šã ã‘ã™ã‚‹
         if (blackStoneArray[thisServer].some(function (value) {
             return value[0] === Number(boardPlace[0]) && value[1] === Number(boardPlace[1]);
         }) || whiteStoneArray[thisServer].some(function (value) {
             return value[0] === Number(boardPlace[0]) && value[1] === Number(boardPlace[1]);
         })) {
-            const reply = await thisChannel.send("‘I‘ğ‚³‚ê‚½êŠ‚É‚ÍŠù‚ÉÎ‚ª‚ ‚è‚Ü‚·B•Ê‚ÌêŠ‚ğw’è‚µ‚Ä‚­‚¾‚³‚¢");
+            const reply = await thisChannel.send("é¸æŠã•ã‚ŒãŸå ´æ‰€ã«ã¯æ—¢ã«çŸ³ãŒã‚ã‚Šã¾ã™ã€‚åˆ¥ã®å ´æ‰€ã‚’æŒ‡å®šã—ã¦ãã ã•ã„");
             await setTimeout(2500);
             await reply.delete();
             return;
@@ -320,7 +320,7 @@ client.on('messageCreate', async msg => { //ƒƒbƒZ[ƒW‚Ìæ“¾
         try {
             let delArray = StoneTrash(Number(boardPlace[0]), Number(boardPlace[1]), false);
         } catch (e) {
-            const reply = await thisChannel.send("ƒGƒ‰[‚ª”­¶‚µ‚Ü‚µ‚½");
+            const reply = await thisChannel.send("ã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã—ã¾ã—ãŸ");
             console.log(e);
         }
         delArray.sort(function (first, second) {
@@ -341,13 +341,13 @@ client.on('messageCreate', async msg => { //ƒƒbƒZ[ƒW‚Ìæ“¾
             try {
                 let checkArray = StoneTrash(Number(boardPlace[0]), Number(boardPlace[1]), true);
             } catch (e) {
-                const reply = await thisChannel.send("ƒGƒ‰[‚ª”­¶‚µ‚Ü‚µ‚½");
+                const reply = await thisChannel.send("ã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã—ã¾ã—ãŸ");
                 console.log(e);
             }
             if (checkArray.length != 0) {
                 blackStoneArray[thisServer] = keepBlackStone;
                 whiteStoneArray[thisServer] = keepWhiteStone;
-                const reply = await thisChannel.send("’…è‹Ö~“_‚Å‚·");
+                const reply = await thisChannel.send("ç€æ‰‹ç¦æ­¢ç‚¹ã§ã™");
                 await setTimeout(2500);
                 await reply.delete();
                 return;
@@ -428,11 +428,11 @@ client.on('messageCreate', async msg => { //ƒƒbƒZ[ƒW‚Ìæ“¾
 
 
 
-    //‘Î‹ÇŠJn
+    //å¯¾å±€é–‹å§‹
     let startText = text.split(',');
     if ((startText[0] === "start" || startText[0] === "Start")) {
         if (startText.length <= 1) {
-            const reply = await thisChannel.send("‘Î‹Ç‚ğn‚ß‚é‚É‚Í```@I-Go_Bot start,”Õ‚Ì‘å‚«‚³(,’u‚«Î‚Ì”)```‚Æ“ü—Í‚µ‚Ä‚­‚¾‚³‚¢");
+            const reply = await thisChannel.send("å¯¾å±€ã‚’å§‹ã‚ã‚‹ã«ã¯```@I-Go_Bot start,ç›¤ã®å¤§ãã•(,ç½®ãçŸ³ã®æ•°)```ã¨å…¥åŠ›ã—ã¦ãã ã•ã„");
             await setTimeout(2500);
             await reply.delete();
             return;
@@ -440,7 +440,7 @@ client.on('messageCreate', async msg => { //ƒƒbƒZ[ƒW‚Ìæ“¾
         if (startText.length == 2) startText.push("0");
 
         if (!stringNumberBool(startText[1]) || !stringNumberBool(startText[2])) {
-            const reply = await thisChannel.send("‘Î‹Ç‚ğn‚ß‚é‚É‚Í```@I-Go_Bot start,”Õ‚Ì‘å‚«‚³(,’u‚«Î‚Ì”)```‚Æ“ü—Í‚µ‚Ä‚­‚¾‚³‚¢");
+            const reply = await thisChannel.send("å¯¾å±€ã‚’å§‹ã‚ã‚‹ã«ã¯```@I-Go_Bot start,ç›¤ã®å¤§ãã•(,ç½®ãçŸ³ã®æ•°)```ã¨å…¥åŠ›ã—ã¦ãã ã•ã„");
             await setTimeout(2500);
             await reply.delete();
             return;
@@ -460,7 +460,7 @@ client.on('messageCreate', async msg => { //ƒƒbƒZ[ƒW‚Ìæ“¾
             else if (boardSize[thisServer] == 13) {
                 board = sharp("IGo_Board_13.png");
                 if (startText[2] > 4 || startText[2] < 0) {
-                    const reply = await thisChannel.send("’u‚«Î‚Ì”‚ª³‚µ‚­‚ ‚è‚Ü‚¹‚ñ");
+                    const reply = await thisChannel.send("ç½®ãçŸ³ã®æ•°ãŒæ­£ã—ãã‚ã‚Šã¾ã›ã‚“");
                     await setTimeout(2500);
                     await reply.delete();
                     return;
@@ -481,7 +481,7 @@ client.on('messageCreate', async msg => { //ƒƒbƒZ[ƒW‚Ìæ“¾
             else if (boardSize[thisServer] == 19) {
                 board = sharp("IGo_Board_19.png");
                 if (startText[2] > 9 || startText[2] < 0) {
-                    const reply = await thisChannel.send("’u‚«Î‚Ì”‚ª³‚µ‚­‚ ‚è‚Ü‚¹‚ñ");
+                    const reply = await thisChannel.send("ç½®ãçŸ³ã®æ•°ãŒæ­£ã—ãã‚ã‚Šã¾ã›ã‚“");
                     await setTimeout(2500);
                     await reply.delete();
                     return;
@@ -500,7 +500,7 @@ client.on('messageCreate', async msg => { //ƒƒbƒZ[ƒW‚Ìæ“¾
                 }
             }
             else {
-                const reply = await thisChannel.send("”Ô‚Ì‘å‚«‚³‚É‚Í 9, 13, 19 ‚ªw’è‚Å‚«‚Ü‚·");
+                const reply = await thisChannel.send("ç•ªã®å¤§ãã•ã«ã¯ 9, 13, 19 ãŒæŒ‡å®šã§ãã¾ã™");
                 await setTimeout(2500);
                 await reply.delete();
                 return;
@@ -513,51 +513,51 @@ client.on('messageCreate', async msg => { //ƒƒbƒZ[ƒW‚Ìæ“¾
             let file = new AttachmentBuilder(board);
             await thisChannel.send({
                 embeds: [{
-                    title: "‘Î‹Ç’†",
-                    description: "0è–Ú",
+                    title: "å¯¾å±€ä¸­",
+                    description: "0æ‰‹ç›®",
                     image: {
                         url: "attachment://board.extension"
                     },
                     fields: [
                         {
-                            name: "ƒAƒQƒnƒ}",
-                            value: "•: " + blackAgehama[thisServer] + ",  ”’: " + whiteAgehama[thisServer]
+                            name: "ã‚¢ã‚²ãƒãƒ",
+                            value: "é»’: " + blackAgehama[thisServer] + ",  ç™½: " + whiteAgehama[thisServer]
                         }, {
-                            name: "Ÿ‚Ìè”Ô‚Í",
+                            name: "æ¬¡ã®æ‰‹ç•ªã¯",
                             value: nextPlayer
                         }
                     ]
                 }],
                 files: [file]
-            }).catch((error) => thisChannel.send("‚à‚¤ˆê“x‚â‚è’¼‚µ‚Ä‚­‚¾‚³‚¢"));
+            }).catch((error) => thisChannel.send("ã‚‚ã†ä¸€åº¦ã‚„ã‚Šç›´ã—ã¦ãã ã•ã„"));
 
             nowPlayingBool[thisServer] = true;
             turnNum[thisServer] = 0;
         }
         else {
-            const reply = await thisChannel.send("ƒvƒŒƒCƒ„[‚ª‘µ‚Á‚Ä‚¢‚Ü‚¹‚ñ");
+            const reply = await thisChannel.send("ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒæƒã£ã¦ã„ã¾ã›ã‚“");
             await setTimeout(2500);
             await reply.delete();
         }
     }
-    //‘Î‹ÇŠJn
+    //å¯¾å±€é–‹å§‹
 
-    //‘Î‹ÇI—¹
+    //å¯¾å±€çµ‚äº†
     if (text === "finish" || text === "Finish") {
         let beforeMessage = await thisChannel.messages.fetch({ before: msg.id, limit: 1 })
             .then(messages => messages.first())
             .catch(console.error);
         beforeMessage.edit({
             embeds: [{
-                title: "‘Î‹ÇI—¹",
-                description: "0è–Ú",
+                title: "å¯¾å±€çµ‚äº†",
+                description: "0æ‰‹ç›®",
                 image: {
                     url: "attachment://board.extension"
                 },
                 fields: [
                     {
-                        name: "ƒAƒQƒnƒ}",
-                        value: "•: " + blackAgehama[thisServer] + ",  ”’: " + whiteAgehama[thisServer]
+                        name: "ã‚¢ã‚²ãƒãƒ",
+                        value: "é»’: " + blackAgehama[thisServer] + ",  ç™½: " + whiteAgehama[thisServer]
                     }
                 ]
             }]
@@ -577,17 +577,17 @@ client.on('messageCreate', async msg => { //ƒƒbƒZ[ƒW‚Ìæ“¾
             embeds: [{
                 fields: [
                     {
-                        name: "‘Ò‹@’†",
-                        value: "’N‚à‚¢‚È‚¢"
+                        name: "å¾…æ©Ÿä¸­",
+                        value: "èª°ã‚‚ã„ãªã„"
                     }
                 ]
             }],
         });
     }
-    //‘Î‹ÇI—¹
+    //å¯¾å±€çµ‚äº†
 
-    // ƒ_ƒCƒXƒ[ƒ‹
-    let dicePlace = text.split('D');   // —ƒƒ“ƒVƒ‡ƒ“ a D b => aDb ‚Ìƒ_ƒCƒXƒ[ƒ‹
+    // ãƒ€ã‚¤ã‚¹ãƒ­ãƒ¼ãƒ«
+    let dicePlace = text.split('D');   // ï¼ ãƒ¡ãƒ³ã‚·ãƒ§ãƒ³ a D b => aDb ã®ãƒ€ã‚¤ã‚¹ãƒ­ãƒ¼ãƒ«
     if (dicePlace[0] != null && dicePlace[1] != null && stringNumberBool(dicePlace[0]) && stringNumberBool(dicePlace[1])) {
 
         var returnNum = 0;
@@ -597,34 +597,34 @@ client.on('messageCreate', async msg => { //ƒƒbƒZ[ƒW‚Ìæ“¾
         thisChannel.send("" + returnNum);
 
     }
-    // ƒ_ƒCƒXƒ[ƒ‹
+    // ãƒ€ã‚¤ã‚¹ãƒ­ãƒ¼ãƒ«
 
-    ////ƒ`ƒƒƒ“ƒlƒ‹ì¬
+    ////ãƒãƒ£ãƒ³ãƒãƒ«ä½œæˆ
     //let makeText = text.split(',');
     //if (makeText[0] == "makeChannel") {
     //    msg.channel.parent.clone().then(cat => {
-    //        msg.guild.channels.create('‘Î‹Ç', {
+    //        msg.guild.channels.create('å¯¾å±€', {
     //            type: 'text',
     //            parent: cat.id
     //        })
     //    })
     //}
-    ////ƒ`ƒƒƒ“ƒlƒ‹ì¬
+    ////ãƒãƒ£ãƒ³ãƒãƒ«ä½œæˆ
 
-    //Å‰‚Ìˆ—
+    //æœ€åˆã®å‡¦ç†
     if (text == "firstRun") {
         await thisChannel.send({
             embeds: [{
                 fields: [
                     {
-                        name: "‘Ò‹@’†",
-                        value: "•: ,   ”’: "
+                        name: "å¾…æ©Ÿä¸­",
+                        value: "é»’: ,   ç™½: "
                     }
                 ]
             }],
         });
     }
-    //Å‰‚Ìˆ—
+    //æœ€åˆã®å‡¦ç†
 });
 
 client.login(process.env.token);
@@ -636,14 +636,14 @@ client.login(process.env.token);
 //ODk2NDI1MjIyODAxMDg0NTA2.YWG7Cw.c1FUc9tNF1BRlsG6cL0gAUYa_h0
 //ODk2NDI1MjIyODAxMDg0NTA2.YWG7Cw.SMpLnoRknXU4ezJlnNZi4MCrn5s
 //ODk2NDI1MjIyODAxMDg0NTA2.YWG7Cw.SMpLnoRknXU4ezJlnNZi4MCrn5s
-////‚Å‚«‚é‚±‚Æ
+////ã§ãã‚‹ã“ã¨
 //
-// —ƒƒ“ƒVƒ‡ƒ“ Brack     ==> ”­Œ¾Ò‚ğ•”Ô‚Éİ’è (‘Î‹Ç’†ˆÈŠO)
-// —ƒƒ“ƒVƒ‡ƒ“ White     ==> ”­Œ¾Ò‚ğ”’”Ô‚Éİ’è (‘Î‹Ç’†ˆÈŠO)
-// —ƒƒ“ƒVƒ‡ƒ“ Start,num1,num2 ==> ‘Î‹ÇŠJn (num1˜H”Õ,num2q‚Ì’u‚«Î)
+// ï¼ ãƒ¡ãƒ³ã‚·ãƒ§ãƒ³ Brack     ==> ç™ºè¨€è€…ã‚’é»’ç•ªã«è¨­å®š (å¯¾å±€ä¸­ä»¥å¤–)
+// ï¼ ãƒ¡ãƒ³ã‚·ãƒ§ãƒ³ White     ==> ç™ºè¨€è€…ã‚’ç™½ç•ªã«è¨­å®š (å¯¾å±€ä¸­ä»¥å¤–)
+// ï¼ ãƒ¡ãƒ³ã‚·ãƒ§ãƒ³ Start,num1,num2 ==> å¯¾å±€é–‹å§‹ (num1è·¯ç›¤,num2å­ã®ç½®ãçŸ³)
 //
-//  ‘Î‹Ç’†
-//     —ƒƒ“ƒVƒ‡ƒ“ num1-num2 ==> ¶‚©‚çnum1,ã‚©‚çnum2‚ÌˆÊ’u‚ÉÎ‚ğ’u‚­
+//  å¯¾å±€ä¸­
+//     ï¼ ãƒ¡ãƒ³ã‚·ãƒ§ãƒ³ num1-num2 ==> å·¦ã‹ã‚‰num1,ä¸Šã‹ã‚‰num2ã®ä½ç½®ã«çŸ³ã‚’ç½®ã
 //
-// —ƒƒ“ƒVƒ‡ƒ“ Finish    ==> ‘Î‹ÇI—¹ (‹­§)
-// —ƒƒ“ƒVƒ‡ƒ“ aDb  @   ==> aDb ‚Ìƒ_ƒCƒXƒ[ƒ‹
+// ï¼ ãƒ¡ãƒ³ã‚·ãƒ§ãƒ³ Finish    ==> å¯¾å±€çµ‚äº† (å¼·åˆ¶)
+// ï¼ ãƒ¡ãƒ³ã‚·ãƒ§ãƒ³ aDb  ã€€   ==> aDb ã®ãƒ€ã‚¤ã‚¹ãƒ­ãƒ¼ãƒ«
