@@ -3,7 +3,7 @@ import { createRequire } from "module";
 const require = createRequire(import.meta.url);
 const { setTimeout } = require('timers/promises');
 import { Client, GatewayIntentBits, Partials, AttachmentBuilder } from 'discord.js';
-const client = new Client({ intents: [GatewayIntentBits.Guilds], partials: [Partials.Channel] });
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessages], partials: [Partials.Channel] });
 const sharp = require('sharp');
 
 const stringNumberBool = n => typeof n === "string" && n !== "" && !isNaN(n); // int 化できるか
