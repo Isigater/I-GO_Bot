@@ -18,8 +18,7 @@
     "discord.js": "^14.7.1",
     "module": "^1.2.5",
     "setTimeout": "^0.4.9",
-    "sharp": "^0.30.0",
-    "timersPromises":"^1.0.1"
+    "sharp": "^0.30.0"
   },
   "engines": {
     "node": "19.2.0"
@@ -29,8 +28,7 @@
     "discord.js": "^14.7.1",
     "module": "^1.2.5",
     "setTimeout": "^0.4.9",
-    "sharp": "^0.30.0",
-    "timersPromises":"^1.0.1",
+    "sharp": "^0.30.0"
     "node": "19.2.0"
   }
 }
