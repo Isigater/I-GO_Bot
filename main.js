@@ -1,5 +1,8 @@
 // These lines make "require" available
 import { createRequire } from "module";
+const express = require("express");
+const app = express();
+const PORT = process.env.PORT || 3030;
 const require = createRequire(import.meta.url);
 const { setTimeout } = require('timers/promises');
 import { Client, GatewayIntentBits, Partials, AttachmentBuilder } from 'discord.js';
@@ -627,6 +630,9 @@ client.on('messageCreate', async msg => { //メッセージの取得
     //最初の処理
 });
 
+app.listen(PORT, () => {
+  console.log(`server started on port ${PORT}`);
+});
 client.login(process.env.token);
 //ODk2NDI1MjIyODAxMDg0NTA2.YWG7Cw.fVYjQc9msXYuQiroX8GMCQFUrhM
 //ODk2NDI1MjIyODAxMDg0NTA2.YWG7Cw.Cv_xMP8kmM3_0B8HnQYi1QFh-eA
