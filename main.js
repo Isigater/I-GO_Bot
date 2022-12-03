@@ -1,9 +1,9 @@
 // These lines make "require" available
 import { createRequire } from "module";
+const require = createRequire(import.meta.url);
 const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 3030;
-const require = createRequire(import.meta.url);
 const { setTimeout } = require('timers/promises');
 import { Client, GatewayIntentBits, Partials, AttachmentBuilder } from 'discord.js';
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessages], partials: [Partials.Channel] });
