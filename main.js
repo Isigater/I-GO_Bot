@@ -164,7 +164,7 @@ async function JoinStone() {
     else if (boardSize[thisServer] == 13) image = sharp("IGo_Board_13.png");
     else if (boardSize[thisServer] == 19) image = sharp("IGo_Board_19.png");
     let connetctArray = blackStoneImageArray[thisServer].concat(whiteStoneImageArray[thisServer]);
-    await image.composite(connetctArray).catch(error => console.error(error.message));
+    await image.composite(connetctArray).catch(error => console.log(error.message));
     if (nowTurnBool[thisServer]) nextPlayer = playerBlack[thisServer].user.toString();
     else nextPlayer = playerWhite[thisServer].user.toString();
     turnNum[thisServer]++;
@@ -188,7 +188,7 @@ async function JoinStone() {
             ]
         }],
         files: [file]
-    }).catch((error) => thisChannel.send("もう一度やり直してください"));
+    }).catch((error) => console.log(error.message),thisChannel.send("もう一度やり直してください"));
 
 }
 // ～画像合成関数
@@ -238,7 +238,7 @@ client.on('messageCreate', async msg => { //メッセージの取得
     let text = msg.content;
 
     if (!msg.mentions.users.has(client.user.id)) {
-        await msg.delete().catch(error => console.error(error.message));
+        await msg.delete().catch(error => console.log(error.message));
         return;
     } //メンションされなければ終了
 
@@ -248,7 +248,7 @@ client.on('messageCreate', async msg => { //メッセージの取得
 
     let board; //盤の画像
     thisChannel = msg.channel;
-    await msg.delete().catch(error => console.error(error.message));
+    await msg.delete().catch(error => console.log(error.message));
 
     //手番の設定
     if (!nowPlayingBool[thisServer]) {
@@ -310,7 +310,7 @@ client.on('messageCreate', async msg => { //メッセージの取得
         })) {
             const reply = await thisChannel.send("選択された場所には既に石があります。別の場所を指定してください");
             await setTimeout(2500);
-            await reply.delete().catch(error => console.error(error.message));
+            await reply.delete().catch(error => console.log(error.message));
             return;
         }
 
@@ -352,7 +352,7 @@ client.on('messageCreate', async msg => { //メッセージの取得
                 whiteStoneArray[thisServer] = keepWhiteStone;
                 const reply = await thisChannel.send("着手禁止点です");
                 await setTimeout(2500);
-                await reply.delete().catch(error => console.error(error.message));
+                await reply.delete().catch(error => console.log(error.message));
                 return;
             }
         }
@@ -437,7 +437,7 @@ client.on('messageCreate', async msg => { //メッセージの取得
         if (startText.length <= 1) {
             const reply = await thisChannel.send("対局を始めるには```@I-Go_Bot start,盤の大きさ(,置き石の数)```と入力してください");
             await setTimeout(2500);
-            await reply.delete().catch(error => console.error(error.message));
+            await reply.delete().catch(error => console.log(error.message));
             return;
         }
         if (startText.length == 2) startText.push("0");
@@ -445,7 +445,7 @@ client.on('messageCreate', async msg => { //メッセージの取得
         if (!stringNumberBool(startText[1]) || !stringNumberBool(startText[2])) {
             const reply = await thisChannel.send("対局を始めるには```@I-Go_Bot start,盤の大きさ(,置き石の数)```と入力してください");
             await setTimeout(2500);
-            await reply.delete().catch(error => console.error(error.message));
+            await reply.delete().catch(error => console.log(error.message));
             return;
         }
 
@@ -465,7 +465,7 @@ client.on('messageCreate', async msg => { //メッセージの取得
                 if (startText[2] > 4 || startText[2] < 0) {
                     const reply = await thisChannel.send("置き石の数が正しくありません");
                     await setTimeout(2500);
-                    await reply.delete().catch(error => console.error(error.message));
+                    await reply.delete().catch(error => console.log(error.message));
                     return;
                 }
                 else if (startText[2] != 0) {
@@ -486,7 +486,7 @@ client.on('messageCreate', async msg => { //メッセージの取得
                 if (startText[2] > 9 || startText[2] < 0) {
                     const reply = await thisChannel.send("置き石の数が正しくありません");
                     await setTimeout(2500);
-                    await reply.delete().catch(error => console.error(error.message));
+                    await reply.delete().catch(error => console.log(error.message));
                     return;
                 }
                 else if (startText[2] != 0) {
@@ -505,7 +505,7 @@ client.on('messageCreate', async msg => { //メッセージの取得
             else {
                 const reply = await thisChannel.send("番の大きさには 9, 13, 19 が指定できます");
                 await setTimeout(2500);
-                await reply.delete().catch(error => console.error(error.message));
+                await reply.delete().catch(error => console.log(error.message));
                 return;
             }
             await thisChannel.bulkDelete(5);
@@ -532,7 +532,7 @@ client.on('messageCreate', async msg => { //メッセージの取得
                     ]
                 }],
                 files: [file]
-            }).catch((error) => thisChannel.send("もう一度やり直してください"));
+            }).catch((error) => console.log(error), thisChannel.send("もう一度やり直してください"));
 
             nowPlayingBool[thisServer] = true;
             turnNum[thisServer] = 0;
@@ -540,7 +540,7 @@ client.on('messageCreate', async msg => { //メッセージの取得
         else {
             const reply = await thisChannel.send("プレイヤーが揃っていません");
             await setTimeout(2500);
-            await reply.delete().catch(error => console.error(error.message));
+            await reply.delete().catch(error => console.log(error.message));
         }
     }
     //対局開始
@@ -549,7 +549,7 @@ client.on('messageCreate', async msg => { //メッセージの取得
     if (text === "finish" || text === "Finish") {
         let beforeMessage = await thisChannel.messages.fetch({ before: msg.id, limit: 1 })
             .then(messages => messages.first())
-            .catch(error => console.error(error.message));
+            .catch(error => console.log(error.message));
         beforeMessage.edit({
             embeds: [{
                 title: "対局終了",
@@ -644,7 +644,7 @@ client.login(process.env.token);
 //ODk2NDI1MjIyODAxMDg0NTA2.YWG7Cw.SMpLnoRknXU4ezJlnNZi4MCrn5s
 ////できること
 //
-// ＠メンション Brack     ==> 発言者を黒番に設定 (対局中以外)
+// ＠メンション Black     ==> 発言者を黒番に設定 (対局中以外)
 // ＠メンション White     ==> 発言者を白番に設定 (対局中以外)
 // ＠メンション Start,num1,num2 ==> 対局開始 (num1路盤,num2子の置き石)
 //
