@@ -261,7 +261,7 @@ client.on('messageCreate', async msg => { //メッセージの取得
             else blackName = playerBlack[thisServer].displayName;
             if (playerWhite[thisServer] == null) whiteName = "";
             else whiteName = playerWhite[thisServer].displayName;
-            thisChannel.bulkDelete(1);
+            thisChannel.bulkDelete(1).catch(error => console.log(error.message));
             thisChannel.send({
                 embeds: [{
                     fields: [
@@ -282,7 +282,7 @@ client.on('messageCreate', async msg => { //メッセージの取得
             else blackName = playerBlack[thisServer].displayName;
             if (playerWhite[thisServer] == null) whiteName = "";
             else whiteName = playerWhite[thisServer].displayName;
-            thisChannel.bulkDelete(1);
+            thisChannel.bulkDelete(1).catch(error => console.log(error.message));
             thisChannel.send({
                 embeds: [{
                     fields: [
