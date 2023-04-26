@@ -236,6 +236,7 @@ client.on('messageCreate', async msg => { //メッセージの取得
     thisServer = server.indexOf(msg.guild.id);
     if (msg.author.bot) return; // bot の発言は無視
     let text = msg.content;
+    console.log(text);
 
     if (!msg.mentions.users.has(client.user.id)) {
         await msg.delete().catch(error => console.log(error.message));
@@ -633,15 +634,9 @@ client.on('messageCreate', async msg => { //メッセージの取得
 app.listen(PORT, () => {
   console.log(`server started on port ${PORT}`);
 });
+
 client.login(process.env.token);
-//ODk2NDI1MjIyODAxMDg0NTA2.YWG7Cw.fVYjQc9msXYuQiroX8GMCQFUrhM
-//ODk2NDI1MjIyODAxMDg0NTA2.YWG7Cw.Cv_xMP8kmM3_0B8HnQYi1QFh-eA
-//ODk2NDI1MjIyODAxMDg0NTA2.YWG7Cw.7dORqTnhCcDx_EiwOECr7mlLQVU
-//ODk2NDI1MjIyODAxMDg0NTA2.YWG7Cw.n_I9Pymd6kR7V-y0PwOxyK-Pvk0
-//ODk2NDI1MjIyODAxMDg0NTA2.YWG7Cw.c1FUc9tNF1BRlsG6cL0gAUYa_h0
-//ODk2NDI1MjIyODAxMDg0NTA2.YWG7Cw.c1FUc9tNF1BRlsG6cL0gAUYa_h0
-//ODk2NDI1MjIyODAxMDg0NTA2.YWG7Cw.SMpLnoRknXU4ezJlnNZi4MCrn5s
-//ODk2NDI1MjIyODAxMDg0NTA2.YWG7Cw.SMpLnoRknXU4ezJlnNZi4MCrn5s
+
 ////できること
 //
 // ＠メンション Black     ==> 発言者を黒番に設定 (対局中以外)
