@@ -509,7 +509,6 @@ client.on('messageCreate', async msg => { //メッセージの取得
                 await reply.delete().catch(error => console.log(error.message));
                 return;
             }
-            await thisChannel.bulkDelete(5);
             let nextPlayer;
             if (nowTurnBool[thisServer]) nextPlayer = playerBlack[thisServer].user.toString();
             else nextPlayer = playerWhite[thisServer].user.toString();
