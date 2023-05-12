@@ -532,7 +532,7 @@ client.on('messageCreate', async msg => { //メッセージの取得
                     ]
                 }],
                 files: [file]
-            }).catch((error) => console.log(error), thisChannel.send("もう一度やり直してください"));
+            }).catch((error) => console.dir(error), console.log(error), thisChannel.send("もう一度やり直してください"));
 
             nowPlayingBool[thisServer] = true;
             turnNum[thisServer] = 0;
