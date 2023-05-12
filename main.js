@@ -188,7 +188,7 @@ async function JoinStone() {
             ]
         }],
         files: [file]
-    }).catch((error) => console.log(error.message),thisChannel.send("もう一度やり直してください"));
+    }).catch((error) => console.dir(error), console.log(error.message),thisChannel.send("もう一度やり直してください"));
 
 }
 // ～画像合成関数
