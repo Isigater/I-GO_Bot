@@ -512,6 +512,7 @@ client.on('messageCreate', async msg => { //メッセージの取得
                 return;
             }
             let nextPlayer;
+            console.log("nextPlayer'stipe = ", typeof nextPlayer);
             if (nowTurnBool[thisServer]) nextPlayer = playerBlack[thisServer].user.toString();
             else nextPlayer = playerWhite[thisServer].user.toString();
             //thisChannel.send({ files: [board] });
