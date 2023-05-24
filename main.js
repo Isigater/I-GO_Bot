@@ -188,7 +188,7 @@ async function JoinStone() {
             ]
         }],
         files: [file]
-    }).catch((error) => console.dir(error), console.log(error.message),thisChannel.send("もう一度やり直してください"));
+    }).catch(error => {console.dir(error), console.log(error.message),thisChannel.send("もう一度やり直してください")});
 
 }
 // ～画像合成関数
@@ -511,7 +511,7 @@ client.on('messageCreate', async msg => { //メッセージの取得
                 await reply.delete().catch(error => console.log(error.message));
                 return;
             }
-            let nextPlayer;
+            let nextPlayer = "nextPlayer";
             console.log("nextPlayer'stipe = ", typeof nextPlayer);
             if (nowTurnBool[thisServer]) nextPlayer = playerBlack[thisServer].user.toString();
             else nextPlayer = playerWhite[thisServer].user.toString();
@@ -535,7 +535,7 @@ client.on('messageCreate', async msg => { //メッセージの取得
                     ]
                 }],
                 files: [file]
-            }).catch((error) => console.dir(error), console.log(error), thisChannel.send("もう一度やり直してください"));
+            }).catch(error => {console.dir(error), console.log(error), thisChannel.send("もう一度やり直してください")});
 
             nowPlayingBool[thisServer] = true;
             turnNum[thisServer] = 0;
