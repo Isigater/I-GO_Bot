@@ -321,8 +321,9 @@ client.on('messageCreate', async msg => { //メッセージの取得
         if (nowTurnBool[thisServer]) whiteStoneArray[thisServer].push([Number(boardPlace[0]), Number(boardPlace[1])]);
         else blackStoneArray[thisServer].push([Number(boardPlace[0]), Number(boardPlace[1])]);
 
+        let delArray;
         try {
-            let delArray = StoneTrash(Number(boardPlace[0]), Number(boardPlace[1]), false);
+            delArray = StoneTrash(Number(boardPlace[0]), Number(boardPlace[1]), false);
         } catch (e) {
             const reply = await thisChannel.send("エラーが発生しました");
             console.log(e);
@@ -342,8 +343,9 @@ client.on('messageCreate', async msg => { //メッセージの取得
         }
 
         if (delArray.length == 0) {
+            let checkArray
             try {
-                let checkArray = StoneTrash(Number(boardPlace[0]), Number(boardPlace[1]), true);
+                checkArray = StoneTrash(Number(boardPlace[0]), Number(boardPlace[1]), true);
             } catch (e) {
                 const reply = await thisChannel.send("エラーが発生しました");
                 console.log(e);
